@@ -1,0 +1,4 @@
+num_clients,rmse,mae,nasa_score,training_time_s,comm_per_round_MB,total_comm_MB,samples_per_client,windows_per_client
+2,15.1168,10.9148,456.97,100.49,3.291,65.8206,7815,7815
+5,13.6066,10.1969,335.0,110.48,8.2276,164.5515,3126,3126
+10,13.0946,9.697,274.5,164.49,16.4552,329.1031,1563,1563

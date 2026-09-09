@@ -1,0 +1,2 @@
+seed,rmse,mae,nasa_score,training_time_s,inference_time_ms,best_val_loss,final_val_loss,num_epochs,best_epoch
+2026,13.7475,10.2645,370.41,53.01,0.088112,152.523005,160.981823,48,38

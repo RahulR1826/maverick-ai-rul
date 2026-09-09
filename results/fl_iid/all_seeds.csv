@@ -1,0 +1,4 @@
+seed,test_rmse,test_mae,test_nasa_score,total_training_s,avg_round_s,num_clients,num_rounds,local_epochs
+42,12.9461,9.3372,287.0,131.34,-5.52,5,20,5
+123,13.3009,9.6665,316.4,96.4,-4.21,5,20,5
+2026,13.3744,9.6677,319.69,97.83,-4.37,5,20,5

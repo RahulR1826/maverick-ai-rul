@@ -411,3 +411,122 @@ def predict(
         trues = trues * rul_cap
 
     return trues, preds
+
+
+# ---------------------------------------------------------------------------
+# Extended training entry point (used by run_experiments.py)
+# ---------------------------------------------------------------------------
+
+def train_model_ex(
+    model: nn.Module,
+    train_loader: DataLoader,
+    val_loader: DataLoader,
+    test_loader: DataLoader = None,
+    cfg: "TrainConfig" = None,
+    device: Optional["torch.device"] = None,
+    run_name: str = "centralized",
+    checkpoint_dir: Optional[str] = None,
+    log_dir: Optional[str] = None,
+    rul_cap: int = 125,
+) -> dict:
+    """Run training and return extended result dict including timing.
+
+    This is a thin wrapper around ``train_model`` that additionally records:
+    * wall-clock training time
+    * per-sample inference time on test_loader (if provided)
+    * final test RMSE, MAE, NASA score (if test_loader provided)
+
+    All existing behaviour of ``train_model`` is preserved unchanged.
+
+    Parameters
+    ----------
+    model:
+        Instantiated LSTM model.
+    train_loader:
+        Training DataLoader.
+    val_loader:
+        Validation DataLoader.
+    test_loader:
+        Optional test DataLoader for final evaluation.
+    cfg:
+        Training config.
+    device:
+        Compute device.
+    run_name:
+        Tag for checkpoints and logs.
+    checkpoint_dir:
+        Checkpoint directory.
+    log_dir:
+        Log directory.
+    rul_cap:
+        RUL cap for metric computation.
+
+    Returns
+    -------
+    dict
+        Keys: ``history``, ``training_time_s``, ``inference_time_ms``,
+        ``test_rmse``, ``test_mae``, ``test_nasa_score``.
+    """
+    import time as _time
+    import numpy as _np
+    from training.utils import compute_rmse, compute_mae, nasa_score, resolve_device
+
+    if device is None:
+        device = resolve_device((cfg or CFG.train).device)
+
+    t_start = _time.perf_counter()
+
+    history = train_model(
+        model=model,
+        train_loader=train_loader,
+        val_loader=val_loader,
+        cfg=cfg,
+        device=device,
+        run_name=run_name,
+        checkpoint_dir=checkpoint_dir,
+        log_dir=log_dir,
+        rul_cap=rul_cap,
+    )
+
+    training_time_s = _time.perf_counter() - t_start
+
+    # ── Inference timing ─────────────────────────────────────────────────── #
+    inference_time_ms = float("nan")
+    if test_loader is not None:
+        # Warm-up
+        model.eval()
+        with torch.no_grad():
+            for xb, _ in test_loader:
+                _ = model(xb.to(device))
+                break
+
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
+        t_inf = _time.perf_counter()
+        n_samples = 0
+        with torch.no_grad():
+            for xb, _ in test_loader:
+                xb = xb.to(device)
+                _ = model(xb)
+                n_samples += xb.shape[0]
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
+        inf_elapsed = _time.perf_counter() - t_inf
+        inference_time_ms = (inf_elapsed / max(n_samples, 1)) * 1000.0
+
+    # ── Test evaluation ──────────────────────────────────────────────────── #
+    test_rmse = test_mae = test_nasa = float("nan")
+    if test_loader is not None:
+        y_true, y_pred = predict(model, test_loader, device, rul_cap=rul_cap)
+        test_rmse = compute_rmse(y_true, y_pred)
+        test_mae = compute_mae(y_true, y_pred)
+        test_nasa = nasa_score(y_true, y_pred)
+
+    return {
+        "history": history,
+        "training_time_s": training_time_s,
+        "inference_time_ms": inference_time_ms,
+        "test_rmse": test_rmse,
+        "test_mae": test_mae,
+        "test_nasa_score": test_nasa,
+    }

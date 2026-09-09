@@ -1,0 +1,17 @@
+NASA C-MAPSS Dataset Statistics
+==================================================
+  dataset_name                       : NASA C-MAPSS
+  subset                             : FD001
+  n_train_engines                    : 90
+  n_val_engines                      : 10
+  n_test_engines                     : 100
+  n_train_windows                    : 15630
+  n_val_windows                      : 2101
+  n_test_samples                     : 100
+  n_features                         : 17
+  window_length                      : 30
+  stride                             : 1
+  rul_cap                            : 125
+  removed_sensors                    : [1, 5, 6, 10, 16, 18, 19]
+  train_val_ratio                    : 90:10
+  scaler_type                        : MinMaxScaler(0,1) fitted on train only

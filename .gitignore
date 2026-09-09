@@ -36,7 +36,6 @@ CMAPSSData/
 processed/
 checkpoints/
 logs/
-results/
 *.npy
 *.pt
 

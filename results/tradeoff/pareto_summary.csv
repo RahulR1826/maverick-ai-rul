@@ -1,0 +1,9 @@
+criterion,experiment,rmse,mae,nasa_score,communication_MB,training_time_s,pareto_efficient
+Best RMSE,Rounds-R30,12.5027,9.0841,251.53,246.8273,128.58,True
+Best MAE,Rounds-R30,12.5027,9.0841,251.53,246.8273,128.58,True
+Best NASA Score,Rounds-R30,12.5027,9.0841,251.53,246.8273,128.58,True
+Lowest Communication,Centralized,16.0064,12.1683,556.41,0.0,49.08,False
+Pareto Efficient,Centralized,13.7475,10.2645,370.41,0.0,53.01,True
+Pareto Efficient,Rounds-R10,13.3187,9.9133,286.05,82.2758,59.84,True
+Pareto Efficient,Rounds-R30,12.5027,9.0841,251.53,246.8273,128.58,True
+Pareto Efficient,Epochs-E5,12.6514,9.2497,251.9,164.5515,87.5,True

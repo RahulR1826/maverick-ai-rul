@@ -1,0 +1,2 @@
+dataset_name,subset,n_train_engines,n_val_engines,n_test_engines,n_train_windows,n_val_windows,n_test_samples,n_features,window_length,stride,rul_cap,removed_sensors,train_val_ratio,scaler_type
+NASA C-MAPSS,FD001,90,10,100,15630,2101,100,17,30,1,125,"[1, 5, 6, 10, 16, 18, 19]",90:10,"MinMaxScaler(0,1) fitted on train only"

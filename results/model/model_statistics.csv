@@ -1,0 +1,2 @@
+total_parameters,trainable_parameters,non_trainable_parameters,model_size_fp32_mb,model_size_fp16_mb,input_shape,output_shape,inference_time_ms_per_sample
+215681,215681,0,0.8228,0.4114,"(batch, 30, 17)","(batch,)",0.012468

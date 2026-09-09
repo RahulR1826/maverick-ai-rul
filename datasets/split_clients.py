@@ -290,3 +290,48 @@ def get_engine_splits(
     engine_ids = list(range(1, num_engines + 1))
     chunks = np.array_split(engine_ids, num_clients)
     return {cid: chunk.tolist() for cid, chunk in enumerate(chunks)}
+
+
+# ---------------------------------------------------------------------------
+# Engine label array builder (for engine-level split)
+# ---------------------------------------------------------------------------
+
+def get_engine_labels(
+    df: "pd.DataFrame",
+    feature_cols: list,
+    window_size: int,
+    stride: int = 1,
+) -> np.ndarray:
+    """Build an array of engine IDs corresponding to each sliding window.
+
+    Parameters
+    ----------
+    df:
+        Normalised training DataFrame containing ``unit``, ``cycle``, and
+        feature columns (same DataFrame used in ``make_windows``).
+    feature_cols:
+        Feature columns (used only to match the window ordering).
+    window_size:
+        Sliding window length.
+    stride:
+        Step between consecutive windows.
+
+    Returns
+    -------
+    np.ndarray
+        Integer array of shape ``(N,)`` where entry ``i`` is the engine/unit
+        ID that produced window ``i``.  Ordering matches the ``(X, y)`` arrays
+        produced by ``datasets.preprocessing.make_windows``.
+    """
+    import pandas as _pd  # local import to avoid circular deps at module level
+
+    engine_labels: list = []
+    for unit_id, group in df.groupby("unit"):
+        group = group.sort_values("cycle")
+        T = len(group)
+        if T < window_size:
+            continue  # skipped by make_windows too
+        for _ in range(0, T - window_size + 1, stride):
+            engine_labels.append(int(unit_id))
+    return np.array(engine_labels, dtype=np.int32)
+

@@ -1,0 +1,3 @@
+configuration,RMSE_mean,RMSE_std,MAE_mean,MAE_std,NASA_mean,NASA_std,training_time_s,abs_RMSE_diff,pct_RMSE_diff,abs_MAE_diff,pct_MAE_diff,abs_NASA_diff,pct_NASA_diff
+Centralized,14.6091,0.9969,11.0803,0.8007,430.4267,89.1168,44.09,,,,,,
+FL-IID,13.2071,0.187,9.5571,0.1555,307.6967,14.6963,108.52,-1.402,-9.6,-1.5232,-13.75,-122.73,-28.51
