@@ -1,3 +1,5 @@
+> **SUPERSEDED (2026-10-21).** The numbers in this file come from the earlier protocol (1–3 seeds, centralized with early stopping vs FL with a fixed budget, single-seed sweeps, communication in MiB). Use `results/v2/EXPERIMENT_REPORT.md`, `results/v2/CONCLUSION_CHECK.md` and `results/v2/paper_tables/PAPER_VALUES.md` instead. This file is kept unchanged below for traceability.
+
 # Federated Aircraft Engine Prognostics -- Results Report
 
 Generated: 2026-09-09 12:41:57  |  Dataset: FD001  |  Primary seed: 42
