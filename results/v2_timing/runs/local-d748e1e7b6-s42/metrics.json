@@ -1,0 +1,232 @@
+{
+  "run_id": "local-d748e1e7b6-s42",
+  "method": "local",
+  "seed": 42,
+  "experiment": "local_engine",
+  "grid_point": {},
+  "config_hash": "d748e1e7b6",
+  "smoke": false,
+  "data": {
+    "dataset_id": "FD001",
+    "n_features": 17,
+    "feature_cols": [
+      "os_1",
+      "os_2",
+      "os_3",
+      "s_2",
+      "s_3",
+      "s_4",
+      "s_7",
+      "s_8",
+      "s_9",
+      "s_11",
+      "s_12",
+      "s_13",
+      "s_14",
+      "s_15",
+      "s_17",
+      "s_20",
+      "s_21"
+    ],
+    "n_train_engines": 90,
+    "n_val_engines": 10,
+    "n_test_engines": 100,
+    "val_units": [
+      9,
+      10,
+      20,
+      42,
+      61,
+      69,
+      72,
+      83,
+      95,
+      97
+    ],
+    "n_train_windows": 15630,
+    "n_val_windows": 2101,
+    "scaler": "MinMaxScaler(0,1) fitted on training engines only",
+    "scaler_data_min": null,
+    "scaler_data_max": null,
+    "constant_train_features": [
+      "os_3"
+    ],
+    "test_rul_capped": true,
+    "raw_train_rows": 18240
+  },
+  "model": {
+    "n_parameters": 215681
+  },
+  "partition": {
+    "kind": "engine",
+    "num_clients": 5,
+    "alpha": null,
+    "attempts": 1,
+    "min_client_windows": 256,
+    "partition_seed": 852178102,
+    "client_windows": [
+      2986,
+      3150,
+      3193,
+      3045,
+      3256
+    ],
+    "client_engines": [
+      18,
+      18,
+      18,
+      18,
+      18
+    ],
+    "client_rul_mean": [
+      77.53,
+      80.11,
+      80.67,
+      78.52,
+      81.51
+    ],
+    "engine_groups": [
+      [
+        4,
+        19,
+        21,
+        29,
+        30,
+        33,
+        34,
+        45,
+        48,
+        51,
+        52,
+        66,
+        75,
+        77,
+        79,
+        82,
+        85,
+        88
+      ],
+      [
+        2,
+        6,
+        8,
+        14,
+        17,
+        26,
+        27,
+        31,
+        32,
+        38,
+        39,
+        40,
+        62,
+        63,
+        67,
+        73,
+        84,
+        90
+      ],
+      [
+        11,
+        13,
+        15,
+        18,
+        22,
+        23,
+        35,
+        37,
+        43,
+        44,
+        46,
+        74,
+        86,
+        91,
+        92,
+        94,
+        98,
+        100
+      ],
+      [
+        1,
+        3,
+        5,
+        16,
+        24,
+        25,
+        41,
+        47,
+        49,
+        53,
+        55,
+        56,
+        57,
+        58,
+        65,
+        76,
+        78,
+        93
+      ],
+      [
+        7,
+        12,
+        28,
+        36,
+        50,
+        54,
+        59,
+        60,
+        64,
+        68,
+        70,
+        71,
+        80,
+        81,
+        87,
+        89,
+        96,
+        99
+      ]
+    ]
+  },
+  "test_selected": {
+    "rmse": 16.416003950553126,
+    "mae": 12.397472278594972,
+    "nasa_score": 672.2380736477065,
+    "bias_mean_error": 5.339207748413085
+  },
+  "test_final": {
+    "rmse": 18.18996576140381,
+    "mae": 13.103120450973512,
+    "nasa_score": 993.8152164466057,
+    "bias_mean_error": 1.9453067893981935
+  },
+  "test_aggregation_note": "Local-only metrics are the unweighted MEAN over the K client models, each evaluated on all 100 test engines.",
+  "local_client_spread": {
+    "sel_rmse_min": 14.115490766462267,
+    "sel_rmse_max": 18.33843466474636,
+    "sel_rmse_std_across_clients": 1.495145442446185
+  },
+  "val": {
+    "best_val_rmse": 15.03456662789437,
+    "sample_passes": 100
+  },
+  "timing": {
+    "wall_s": 73.13187829998787,
+    "train_compute_s": 62.327263901010156
+  },
+  "comm": {
+    "model_payload": {
+      "n_tensors": 12,
+      "n_parameters": 215681,
+      "dtype": "float32",
+      "analytic_bytes_params_x4": 862724,
+      "raw_tensor_bytes": 862724,
+      "serialized_payload_bytes": 864260,
+      "serialization_overhead_bytes": 1536
+    },
+    "total_bytes": 0,
+    "note": "No communication."
+  },
+  "finished": "2026-10-21T20:06:27",
+  "status": "complete"
+}

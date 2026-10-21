@@ -1,0 +1,16 @@
+experiment,grid_label,method,seed,run_id,dirichlet_alpha
+local_dirichlet,dirichlet_alpha=1.0,local,42,local-75f056e43e-s42,1.0
+local_dirichlet,dirichlet_alpha=1.0,local,123,local-75f056e43e-s123,1.0
+local_dirichlet,dirichlet_alpha=1.0,local,2026,local-75f056e43e-s2026,1.0
+local_dirichlet,dirichlet_alpha=1.0,local,3407,local-75f056e43e-s3407,1.0
+local_dirichlet,dirichlet_alpha=1.0,local,9001,local-75f056e43e-s9001,1.0
+local_dirichlet,dirichlet_alpha=0.5,local,42,local-15bfac9927-s42,0.5
+local_dirichlet,dirichlet_alpha=0.5,local,123,local-15bfac9927-s123,0.5
+local_dirichlet,dirichlet_alpha=0.5,local,2026,local-15bfac9927-s2026,0.5
+local_dirichlet,dirichlet_alpha=0.5,local,3407,local-15bfac9927-s3407,0.5
+local_dirichlet,dirichlet_alpha=0.5,local,9001,local-15bfac9927-s9001,0.5
+local_dirichlet,dirichlet_alpha=0.1,local,42,local-8a2aef70cc-s42,0.1
+local_dirichlet,dirichlet_alpha=0.1,local,123,local-8a2aef70cc-s123,0.1
+local_dirichlet,dirichlet_alpha=0.1,local,2026,local-8a2aef70cc-s2026,0.1
+local_dirichlet,dirichlet_alpha=0.1,local,3407,local-8a2aef70cc-s3407,0.1
+local_dirichlet,dirichlet_alpha=0.1,local,9001,local-8a2aef70cc-s9001,0.1

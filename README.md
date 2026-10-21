@@ -2,6 +2,133 @@
 
 A **research-quality** implementation of Federated Learning for **Remaining Useful Life (RUL) prediction** of aircraft engines using the NASA C-MAPSS dataset.  Multiple simulated airlines collaboratively train an LSTM model **without sharing raw sensor data**, using the [Flower](https://flower.ai/) federated learning framework.
 
+> Keeping raw data on clients is **not** a formal privacy guarantee: FedAvg model updates can leak information about training data. No differential privacy or secure aggregation is implemented.
+
+---
+
+## Reproducible paper experiments (v2 protocol) — start here
+
+The paper results (NICEDT-2027) are produced by the `research/` package, **not** by the older
+`run_experiments.py` (kept unchanged for reference; its outputs in `results/` other than
+`results/v2/` come from the earlier, non-budget-matched protocol). The v2 pipeline re-uses the
+original LSTM (`models/lstm_model.py`) and reproduces the original FD001 preprocessing exactly
+(verified by `tests/test_data_partition.py::test_fd001_matches_original_cached_arrays`), but runs
+FedAvg as a deterministic, sequential in-process simulation so that every random choice is seeded.
+
+| What | Where |
+|---|---|
+| All settings, experiments, sweeps, seed lists | `configs/fd001_protocol.json` |
+| Data prep (engine-aware windows, leakage checks) | `research/data.py` |
+| IID / Dirichlet / whole-engine partitions, min-size safeguard | `research/partition.py` |
+| Centralized, FedAvg, local-only training, checkpoint selection | `research/trainer.py` |
+| RMSE, MAE, NASA score, error summaries | `research/metrics.py` |
+| Serialized-payload communication accounting | `research/comm.py` |
+| Runner (resumable, never overwrites) | `research/run.py` |
+| Tables / figures / report | `research/aggregate.py`, `research/plots.py`, `research/report.py` |
+| Unit tests | `tests/` |
+
+### Setup
+
+Tested with Python 3.11.9, torch 2.7.1+cu118, numpy 1.26.4, pandas 2.3.3, scikit-learn 1.3.0,
+matplotlib 3.10.6 and pytest 9.1.1 on Windows 11 with an RTX 4060 Laptop GPU. The v2 pipeline doesn't need `flwr`.
+
+```bash
+pip install -r requirements.txt pytest
+```
+
+### Commands
+
+```bash
+python -m pytest -q tests
+```
+
+```bash
+python -m research.run --list
+```
+
+```bash
+python -m research.run --suite essential --smoke
+```
+
+```bash
+python -m research.run --suite essential
+```
+
+```bash
+python -m research.run --suite sweeps
+```
+
+```bash
+python -m research.run --suite essential --seed-set fallback
+```
+
+```bash
+python -m research.run --experiments centralized fedavg_iid --seeds 42 123
+```
+
+```bash
+python -m research.aggregate
+```
+
+```bash
+python -m research.plots --checkpoint both
+```
+
+```bash
+python -m research.report
+```
+
+```bash
+python -m research.paper_tables
+```
+
+```bash
+python -m research.verify_phase2
+```
+
+`verify_phase2` checks the four Phase-2 requirements (5 seeds, fair comparison, partition protocols,
+repeated sweeps) against the run outputs on disk and writes `results/v2/PHASE2_VERIFICATION.md`.
+
+Exact sequence used for the paper results (2026-10-21; 5 seeds; about 75 min of GPU time on an RTX 4060 Laptop):
+
+```bash
+python -m research.run --suite essential
+```
+
+```bash
+python -m research.run --suite sweeps
+```
+
+```bash
+python -m research.run --experiments ablation_fedavg_k1
+```
+
+```bash
+python -m research.run --experiments centralized centralized_legacy_es fedavg_iid local_iid fedavg_engine local_engine --seeds 42 --out results/v2_timing
+```
+
+then `research.aggregate` (once for `results/v2`, once with `--out results/v2_timing --seeds 42`), `research.plots --checkpoint both`,
+`research.report` and `research.paper_tables`. The optional `local_dirichlet` experiments (suite `heterogeneity_extra`) were not run.
+
+**Results:** `results/v2/README.md` (index), `results/v2/EXPERIMENT_REPORT.md` (report),
+`results/v2/CONCLUSION_CHECK.md` (original findings vs new results), `results/v2/paper_tables/PAPER_VALUES.md`.
+
+- `--smoke` uses a 2-round / 2-epoch budget and writes to `results/v2_smoke/` (never used in the paper).
+- `--dry-run` lists every planned run and whether it is already complete.
+- Runs are content-addressed (`<method>-<config-hash>-s<seed>`): identical configurations shared by several
+  experiments (e.g. FedAvg-IID = R=20 point of the round sweep) run once. A finished run is skipped; `--force`
+  recomputes it and keeps the old directory as `*.prev_<timestamp>`.
+
+### Outputs
+
+- `results/v2/runs/<run_id>/`: `config.json` (resolved config, seed streams, environment, git commit),
+  `metrics.json` (test metrics for selected and final checkpoints, validation, timing, communication, partition),
+  `history.csv` (per-round/epoch validation RMSE, timing, cumulative traffic), `test_predictions.csv` (per-engine
+  predictions and errors), `clients.csv` (per-client windows, engines, RUL distribution), `client_rounds.csv`.
+- `checkpoints/v2/<run_id>/selected.pt`, `final.pt` (local-only: one per client).
+- `results/v2/tables/*.csv`, `results/v2/figures/*.{png,pdf}`, `results/v2/EXPERIMENT_REPORT.md`.
+- `results/v2/logs/`: one log file per runner invocation.
+
 ---
 
 ## Table of Contents
