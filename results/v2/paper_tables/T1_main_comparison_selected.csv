@@ -1,0 +1,8 @@
+Configuration,n_seeds,RMSE,MAE,NASA score,"Traffic (MB, payload est.)"
+Centralized (budget-matched),5,14.46 ± 0.44,10.67 ± 0.43,447.9 ± 35.4,0.0
+Centralized (original early stopping),5,14.55 ± 0.48,10.87 ± 0.24,441.4 ± 61.3,0.0
+FedAvg IID-window (K=5),5,13.24 ± 0.32,9.78 ± 0.21,304.0 ± 26.6,172.9
+Local-only IID-window (mean of 5),5,14.58 ± 0.17,10.81 ± 0.09,414.6 ± 20.4,0.0
+FedAvg whole-engine (K=5),5,13.87 ± 0.19,10.15 ± 0.13,349.0 ± 26.5,172.9
+Local-only whole-engine (mean of 5),5,16.28 ± 0.50,12.13 ± 0.26,651.8 ± 80.3,0.0
+Ablation: FedAvg K=1 (optimizer reset only),5,13.94 ± 0.89,10.35 ± 0.66,388.1 ± 99.6,34.6

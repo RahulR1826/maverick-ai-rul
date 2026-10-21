@@ -1,0 +1,176 @@
+{
+  "run_id": "fedavg-28fdba67c8-s3407",
+  "method": "fedavg",
+  "seed": 3407,
+  "experiment": "sweep_clients",
+  "grid_point": {
+    "fed.num_clients": 10
+  },
+  "config_hash": "28fdba67c8",
+  "smoke": false,
+  "data": {
+    "dataset_id": "FD001",
+    "n_features": 17,
+    "feature_cols": [
+      "os_1",
+      "os_2",
+      "os_3",
+      "s_2",
+      "s_3",
+      "s_4",
+      "s_7",
+      "s_8",
+      "s_9",
+      "s_11",
+      "s_12",
+      "s_13",
+      "s_14",
+      "s_15",
+      "s_17",
+      "s_20",
+      "s_21"
+    ],
+    "n_train_engines": 90,
+    "n_val_engines": 10,
+    "n_test_engines": 100,
+    "val_units": [
+      9,
+      10,
+      20,
+      42,
+      61,
+      69,
+      72,
+      83,
+      95,
+      97
+    ],
+    "n_train_windows": 15630,
+    "n_val_windows": 2101,
+    "scaler": "MinMaxScaler(0,1) fitted on training engines only",
+    "scaler_data_min": null,
+    "scaler_data_max": null,
+    "constant_train_features": [
+      "os_3"
+    ],
+    "test_rul_capped": true,
+    "raw_train_rows": 18240
+  },
+  "model": {
+    "n_parameters": 215681
+  },
+  "partition": {
+    "kind": "iid_window",
+    "num_clients": 10,
+    "alpha": null,
+    "attempts": 1,
+    "min_client_windows": 256,
+    "partition_seed": 4194043719,
+    "client_windows": [
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563
+    ],
+    "client_engines": [
+      90,
+      90,
+      90,
+      90,
+      90,
+      90,
+      90,
+      90,
+      90,
+      90
+    ],
+    "client_rul_mean": [
+      79.98,
+      79.13,
+      80.25,
+      81.6,
+      80.03,
+      80.46,
+      79.31,
+      79.66,
+      78.16,
+      78.55
+    ],
+    "engine_groups": null
+  },
+  "test_selected": {
+    "rmse": 13.763081344135111,
+    "mae": 9.917334880828857,
+    "nasa_score": 340.6749433383973,
+    "bias_mean_error": 3.27776798248291,
+    "abs_err_median": 6.951699256896973,
+    "abs_err_p90": 23.7026481628418,
+    "abs_err_max": 40.91986083984375,
+    "frac_late": 0.59,
+    "frac_early": 0.41,
+    "frac_within_10": 0.6,
+    "frac_within_20": 0.88,
+    "max_late_error": 38.02470397949219,
+    "max_early_error": -40.91986083984375,
+    "n": 100
+  },
+  "test_final": {
+    "rmse": 13.763081344135111,
+    "mae": 9.917334880828857,
+    "nasa_score": 340.6749433383973,
+    "bias_mean_error": 3.27776798248291,
+    "abs_err_median": 6.951699256896973,
+    "abs_err_p90": 23.7026481628418,
+    "abs_err_max": 40.91986083984375,
+    "frac_late": 0.59,
+    "frac_early": 0.41,
+    "frac_within_10": 0.6,
+    "frac_within_20": 0.88,
+    "max_late_error": 38.02470397949219,
+    "max_early_error": -40.91986083984375,
+    "n": 100
+  },
+  "val": {
+    "best_val_rmse": 13.017025184691205,
+    "selected_at_round": 20,
+    "final_val_rmse": 13.017025184691205,
+    "sample_passes": 100
+  },
+  "timing": {
+    "wall_s": 61.26418790000025,
+    "mean_round_wall_s": 3.0628879850031807,
+    "total_client_train_s": 60.378802599268965,
+    "mean_client_local_train_s": 0.30189401299634483,
+    "total_aggregation_s": 0.1962644001469016,
+    "total_server_val_s": 0.41695349966175854,
+    "parallel_estimate_total_s": 6.637275299988687,
+    "note": "Clients run sequentially on one device; parallel_estimate = sum over rounds of (slowest client + aggregation), a derived estimate."
+  },
+  "comm": {
+    "model_payload": {
+      "n_tensors": 12,
+      "n_parameters": 215681,
+      "dtype": "float32",
+      "analytic_bytes_params_x4": 862724,
+      "raw_tensor_bytes": 862724,
+      "serialized_payload_bytes": 864260,
+      "serialization_overhead_bytes": 1536
+    },
+    "rounds": 20,
+    "clients_per_round": 10,
+    "precision": "float32",
+    "protocol_overhead_included": false,
+    "total_upload_bytes": 172852000,
+    "total_download_bytes": 172852000,
+    "total_bytes": 345704000,
+    "label": "serialized-payload estimate (application payload only; no protocol overhead; simulated, not measured on a network)"
+  },
+  "finished": "2026-10-21T19:43:15",
+  "status": "complete"
+}

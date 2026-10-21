@@ -1,0 +1,287 @@
+{
+  "run_id": "fedavg-38af757693-s2026",
+  "method": "fedavg",
+  "seed": 2026,
+  "experiment": "sweep_clients_engine",
+  "grid_point": {
+    "fed.num_clients": 10
+  },
+  "config_hash": "38af757693",
+  "smoke": false,
+  "data": {
+    "dataset_id": "FD001",
+    "n_features": 17,
+    "feature_cols": [
+      "os_1",
+      "os_2",
+      "os_3",
+      "s_2",
+      "s_3",
+      "s_4",
+      "s_7",
+      "s_8",
+      "s_9",
+      "s_11",
+      "s_12",
+      "s_13",
+      "s_14",
+      "s_15",
+      "s_17",
+      "s_20",
+      "s_21"
+    ],
+    "n_train_engines": 90,
+    "n_val_engines": 10,
+    "n_test_engines": 100,
+    "val_units": [
+      9,
+      10,
+      20,
+      42,
+      61,
+      69,
+      72,
+      83,
+      95,
+      97
+    ],
+    "n_train_windows": 15630,
+    "n_val_windows": 2101,
+    "scaler": "MinMaxScaler(0,1) fitted on training engines only",
+    "scaler_data_min": null,
+    "scaler_data_max": null,
+    "constant_train_features": [
+      "os_3"
+    ],
+    "test_rul_capped": true,
+    "raw_train_rows": 18240
+  },
+  "model": {
+    "n_parameters": 215681
+  },
+  "partition": {
+    "kind": "engine",
+    "num_clients": 10,
+    "alpha": null,
+    "attempts": 1,
+    "min_client_windows": 256,
+    "partition_seed": 2596912347,
+    "client_windows": [
+      1538,
+      1636,
+      1733,
+      1613,
+      1368,
+      1607,
+      1617,
+      1595,
+      1491,
+      1432
+    ],
+    "client_engines": [
+      9,
+      9,
+      9,
+      9,
+      9,
+      9,
+      9,
+      9,
+      9,
+      9
+    ],
+    "client_rul_mean": [
+      78.92,
+      81.69,
+      84.1,
+      81.07,
+      73.33,
+      81.09,
+      81.17,
+      80.56,
+      77.7,
+      75.53
+    ],
+    "engine_groups": [
+      [
+        15,
+        18,
+        19,
+        45,
+        51,
+        54,
+        59,
+        74,
+        82
+      ],
+      [
+        17,
+        27,
+        29,
+        43,
+        46,
+        48,
+        58,
+        64,
+        87
+      ],
+      [
+        3,
+        7,
+        28,
+        30,
+        33,
+        75,
+        77,
+        86,
+        96
+      ],
+      [
+        8,
+        14,
+        16,
+        34,
+        35,
+        56,
+        73,
+        78,
+        81
+      ],
+      [
+        1,
+        6,
+        25,
+        36,
+        37,
+        41,
+        80,
+        91,
+        93
+      ],
+      [
+        4,
+        23,
+        57,
+        60,
+        70,
+        79,
+        84,
+        92,
+        94
+      ],
+      [
+        2,
+        13,
+        31,
+        38,
+        49,
+        52,
+        65,
+        66,
+        89
+      ],
+      [
+        5,
+        11,
+        12,
+        21,
+        26,
+        32,
+        47,
+        55,
+        99
+      ],
+      [
+        39,
+        44,
+        67,
+        71,
+        85,
+        88,
+        90,
+        98,
+        100
+      ],
+      [
+        22,
+        24,
+        40,
+        50,
+        53,
+        62,
+        63,
+        68,
+        76
+      ]
+    ]
+  },
+  "test_selected": {
+    "rmse": 14.23938364621668,
+    "mae": 10.030291209220886,
+    "nasa_score": 370.99178504465897,
+    "bias_mean_error": 3.2592723989486694,
+    "abs_err_median": 6.327472686767578,
+    "abs_err_p90": 24.680392456054705,
+    "abs_err_max": 43.735496520996094,
+    "frac_late": 0.65,
+    "frac_early": 0.35,
+    "frac_within_10": 0.63,
+    "frac_within_20": 0.85,
+    "max_late_error": 37.78504180908203,
+    "max_early_error": -43.735496520996094,
+    "n": 100
+  },
+  "test_final": {
+    "rmse": 14.23938364621668,
+    "mae": 10.030291209220886,
+    "nasa_score": 370.99178504465897,
+    "bias_mean_error": 3.2592723989486694,
+    "abs_err_median": 6.327472686767578,
+    "abs_err_p90": 24.680392456054705,
+    "abs_err_max": 43.735496520996094,
+    "frac_late": 0.65,
+    "frac_early": 0.35,
+    "frac_within_10": 0.63,
+    "frac_within_20": 0.85,
+    "max_late_error": 37.78504180908203,
+    "max_early_error": -43.735496520996094,
+    "n": 100
+  },
+  "val": {
+    "best_val_rmse": 13.533285055061011,
+    "selected_at_round": 20,
+    "final_val_rmse": 13.533285055061011,
+    "sample_passes": 100
+  },
+  "timing": {
+    "wall_s": 126.73448919993825,
+    "mean_round_wall_s": 6.3360997650073845,
+    "total_client_train_s": 124.97896590048913,
+    "mean_client_local_train_s": 0.6248948295024457,
+    "total_aggregation_s": 0.3778902000049129,
+    "total_server_val_s": 0.8543861999642104,
+    "parallel_estimate_total_s": 14.194050300167874,
+    "note": "Clients run sequentially on one device; parallel_estimate = sum over rounds of (slowest client + aggregation), a derived estimate."
+  },
+  "comm": {
+    "model_payload": {
+      "n_tensors": 12,
+      "n_parameters": 215681,
+      "dtype": "float32",
+      "analytic_bytes_params_x4": 862724,
+      "raw_tensor_bytes": 862724,
+      "serialized_payload_bytes": 864260,
+      "serialization_overhead_bytes": 1536
+    },
+    "rounds": 20,
+    "clients_per_round": 10,
+    "precision": "float32",
+    "protocol_overhead_included": false,
+    "total_upload_bytes": 172852000,
+    "total_download_bytes": 172852000,
+    "total_bytes": 345704000,
+    "label": "serialized-payload estimate (application payload only; no protocol overhead; simulated, not measured on a network)"
+  },
+  "finished": "2026-10-21T19:56:10",
+  "status": "complete"
+}

@@ -1,0 +1,131 @@
+{
+  "run_id": "local-d8e4145c97-s9001",
+  "method": "local",
+  "seed": 9001,
+  "experiment": "local_iid",
+  "grid_point": {},
+  "config_hash": "d8e4145c97",
+  "smoke": false,
+  "data": {
+    "dataset_id": "FD001",
+    "n_features": 17,
+    "feature_cols": [
+      "os_1",
+      "os_2",
+      "os_3",
+      "s_2",
+      "s_3",
+      "s_4",
+      "s_7",
+      "s_8",
+      "s_9",
+      "s_11",
+      "s_12",
+      "s_13",
+      "s_14",
+      "s_15",
+      "s_17",
+      "s_20",
+      "s_21"
+    ],
+    "n_train_engines": 90,
+    "n_val_engines": 10,
+    "n_test_engines": 100,
+    "val_units": [
+      9,
+      10,
+      20,
+      42,
+      61,
+      69,
+      72,
+      83,
+      95,
+      97
+    ],
+    "n_train_windows": 15630,
+    "n_val_windows": 2101,
+    "scaler": "MinMaxScaler(0,1) fitted on training engines only",
+    "scaler_data_min": null,
+    "scaler_data_max": null,
+    "constant_train_features": [
+      "os_3"
+    ],
+    "test_rul_capped": true,
+    "raw_train_rows": 18240
+  },
+  "model": {
+    "n_parameters": 215681
+  },
+  "partition": {
+    "kind": "iid_window",
+    "num_clients": 5,
+    "alpha": null,
+    "attempts": 1,
+    "min_client_windows": 256,
+    "partition_seed": 3467084285,
+    "client_windows": [
+      3126,
+      3126,
+      3126,
+      3126,
+      3126
+    ],
+    "client_engines": [
+      90,
+      90,
+      90,
+      90,
+      90
+    ],
+    "client_rul_mean": [
+      78.76,
+      79.82,
+      80.23,
+      79.23,
+      80.53
+    ],
+    "engine_groups": null
+  },
+  "test_selected": {
+    "rmse": 14.610226610885485,
+    "mae": 10.845224734306335,
+    "nasa_score": 415.0728210442145,
+    "bias_mean_error": 4.775991261482238
+  },
+  "test_final": {
+    "rmse": 14.618849801793266,
+    "mae": 10.678543909072877,
+    "nasa_score": 455.29881205841673,
+    "bias_mean_error": 3.8602847347259512
+  },
+  "test_aggregation_note": "Local-only metrics are the unweighted MEAN over the K client models, each evaluated on all 100 test engines.",
+  "local_client_spread": {
+    "sel_rmse_min": 13.590893334803077,
+    "sel_rmse_max": 15.415812037165328,
+    "sel_rmse_std_across_clients": 0.6186885247846722
+  },
+  "val": {
+    "best_val_rmse": 13.11922496971693,
+    "sample_passes": 100
+  },
+  "timing": {
+    "wall_s": 94.05857329990249,
+    "train_compute_s": 80.6845270000631
+  },
+  "comm": {
+    "model_payload": {
+      "n_tensors": 12,
+      "n_parameters": 215681,
+      "dtype": "float32",
+      "analytic_bytes_params_x4": 862724,
+      "raw_tensor_bytes": 862724,
+      "serialized_payload_bytes": 864260,
+      "serialization_overhead_bytes": 1536
+    },
+    "total_bytes": 0,
+    "note": "No communication."
+  },
+  "finished": "2026-10-21T18:37:15",
+  "status": "complete"
+}
