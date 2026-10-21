@@ -1,0 +1,138 @@
+{
+  "_comment": "Experimental protocol for the NICEDT-2027 FL-RUL paper. Every run = base config + experiment overrides + one grid point + one seed. Edit here, not in code.",
+
+  "base": {
+    "data": {
+      "dataset_id": "FD001",
+      "rul_cap": 125,
+      "window_size": 30,
+      "stride": 1,
+      "val_fraction": 0.10,
+      "val_split_seed": 42,
+      "drop_sensors": [1, 5, 6, 10, 16, 18, 19],
+      "cap_test_rul": true
+    },
+    "model": {
+      "hidden_size": 128,
+      "num_layers": 2,
+      "dropout": 0.2,
+      "bidirectional": false
+    },
+    "train": {
+      "batch_size": 256,
+      "learning_rate": 0.001,
+      "weight_decay": 1e-05,
+      "grad_clip": 1.0,
+      "device": "auto",
+      "deterministic": true
+    },
+    "fed": {
+      "num_clients": 5,
+      "num_rounds": 20,
+      "local_epochs": 5,
+      "fraction_fit": 1.0,
+      "partition": "iid_window",
+      "dirichlet_alpha": null,
+      "n_rul_bins": 10,
+      "min_client_windows": 256,
+      "max_partition_attempts": 100
+    },
+    "centralized": {
+      "epochs": null,
+      "select_every": null,
+      "early_stopping": false,
+      "patience": 10,
+      "min_delta": 0.0001,
+      "lr_plateau": false,
+      "max_epochs_es": 50
+    }
+  },
+
+  "seeds": {
+    "primary": [42, 123, 2026, 3407, 9001],
+    "fallback": [42, 123, 2026]
+  },
+
+  "experiments": {
+    "centralized": {
+      "description": "Centralized LSTM on pooled training windows. Fixed budget = num_rounds x local_epochs epochs (100), constant LR, checkpoint selected on the shared validation engines every local_epochs epochs (20 candidates) -- the same policy as FedAvg.",
+      "method": "centralized",
+      "suites": ["essential", "main"]
+    },
+    "centralized_legacy_es": {
+      "description": "Original repository protocol for reference only: max 50 epochs, early stopping (patience 10) and ReduceLROnPlateau on validation loss, checkpoint selection every epoch. NOT budget-matched to FedAvg.",
+      "method": "centralized",
+      "overrides": {"centralized": {"early_stopping": true, "lr_plateau": true, "select_every": 1}},
+      "suites": ["essential", "main"]
+    },
+    "fedavg_iid": {
+      "description": "FedAvg, K=5, R=20, E=5, IID window-level partition of the same pooled training windows.",
+      "method": "fedavg",
+      "overrides": {"fed": {"partition": "iid_window"}},
+      "suites": ["essential", "main"]
+    },
+    "local_iid": {
+      "description": "Local-only LSTM: each of the K=5 IID window-level clients trains alone for R x E epochs on its shard; no aggregation.",
+      "method": "local",
+      "overrides": {"fed": {"partition": "iid_window"}},
+      "suites": ["essential", "main"]
+    },
+    "fedavg_engine": {
+      "description": "FedAvg with whole-engine ownership: the 90 training engines are randomly (seeded) assigned to K=5 clients, 18 engines each.",
+      "method": "fedavg",
+      "overrides": {"fed": {"partition": "engine"}},
+      "suites": ["essential", "main"]
+    },
+    "local_engine": {
+      "description": "Local-only LSTM under whole-engine ownership (each airline trains on its own 18 engines only).",
+      "method": "local",
+      "overrides": {"fed": {"partition": "engine"}},
+      "suites": ["essential", "main"]
+    },
+    "fedavg_dirichlet": {
+      "description": "FedAvg with window-level Dirichlet label skew over 10 RUL bins. Also induces quantity skew (unequal client sizes).",
+      "method": "fedavg",
+      "overrides": {"fed": {"partition": "dirichlet_window"}},
+      "grid": {"fed.dirichlet_alpha": [1.0, 0.5, 0.1]},
+      "suites": ["essential", "heterogeneity"]
+    },
+    "local_dirichlet": {
+      "description": "Local-only counterpart of the Dirichlet partitions (optional; shows how much each skewed client gains from federation).",
+      "method": "local",
+      "overrides": {"fed": {"partition": "dirichlet_window"}},
+      "grid": {"fed.dirichlet_alpha": [1.0, 0.5, 0.1]},
+      "suites": ["heterogeneity_extra"]
+    },
+    "ablation_fedavg_k1": {
+      "description": "Ablation: FedAvg with a single client holding all training windows (K=1, R=20, E=5). Mathematically centralized training on pooled data with the Adam state reset every 5 epochs and the same selection rule; separates the effect of federation from the effect of FedAvg's per-round optimizer reset.",
+      "method": "fedavg",
+      "overrides": {"fed": {"num_clients": 1, "partition": "iid_window"}},
+      "suites": ["ablation"]
+    },
+    "sweep_rounds": {
+      "description": "Communication-round sweep: K=5, E=5, IID window-level; R varies.",
+      "method": "fedavg",
+      "grid": {"fed.num_rounds": [5, 10, 20, 30]},
+      "suites": ["sweeps"]
+    },
+    "sweep_local_epochs": {
+      "description": "Local-epoch sweep: K=5, R=20, IID window-level; E varies.",
+      "method": "fedavg",
+      "grid": {"fed.local_epochs": [1, 3, 5, 10]},
+      "suites": ["sweeps"]
+    },
+    "sweep_clients": {
+      "description": "Client-count sweep: R=20, E=5, IID window-level. Total training data FIXED (all 90 training engines' windows); per-client data shrinks as K grows.",
+      "method": "fedavg",
+      "grid": {"fed.num_clients": [2, 5, 10]},
+      "suites": ["sweeps"]
+    },
+    "sweep_clients_engine": {
+      "description": "Client-count sweep under whole-engine ownership (window-level vs whole-engine at each K). Total training data fixed.",
+      "method": "fedavg",
+      "overrides": {"fed": {"partition": "engine"}},
+      "grid": {"fed.num_clients": [2, 5, 10]},
+      "suites": ["sweeps"]
+    }
+  }
+}

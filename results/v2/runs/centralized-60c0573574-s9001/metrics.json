@@ -1,0 +1,120 @@
+{
+  "run_id": "centralized-60c0573574-s9001",
+  "method": "centralized",
+  "seed": 9001,
+  "experiment": "centralized_legacy_es",
+  "grid_point": {},
+  "config_hash": "60c0573574",
+  "smoke": false,
+  "data": {
+    "dataset_id": "FD001",
+    "n_features": 17,
+    "feature_cols": [
+      "os_1",
+      "os_2",
+      "os_3",
+      "s_2",
+      "s_3",
+      "s_4",
+      "s_7",
+      "s_8",
+      "s_9",
+      "s_11",
+      "s_12",
+      "s_13",
+      "s_14",
+      "s_15",
+      "s_17",
+      "s_20",
+      "s_21"
+    ],
+    "n_train_engines": 90,
+    "n_val_engines": 10,
+    "n_test_engines": 100,
+    "val_units": [
+      9,
+      10,
+      20,
+      42,
+      61,
+      69,
+      72,
+      83,
+      95,
+      97
+    ],
+    "n_train_windows": 15630,
+    "n_val_windows": 2101,
+    "scaler": "MinMaxScaler(0,1) fitted on training engines only",
+    "scaler_data_min": null,
+    "scaler_data_max": null,
+    "constant_train_features": [
+      "os_3"
+    ],
+    "test_rul_capped": true,
+    "raw_train_rows": 18240
+  },
+  "model": {
+    "n_parameters": 215681
+  },
+  "test_selected": {
+    "rmse": 14.795508908907944,
+    "mae": 10.861683621406556,
+    "nasa_score": 487.120179277453,
+    "bias_mean_error": 5.034237112998962,
+    "abs_err_median": 8.099274635314941,
+    "abs_err_p90": 25.35036849975586,
+    "abs_err_max": 46.96147155761719,
+    "frac_late": 0.6,
+    "frac_early": 0.4,
+    "frac_within_10": 0.62,
+    "frac_within_20": 0.81,
+    "max_late_error": 46.96147155761719,
+    "max_early_error": -35.87632751464844,
+    "n": 100
+  },
+  "test_final": {
+    "rmse": 14.655541124916617,
+    "mae": 10.364722924232483,
+    "nasa_score": 328.3590933517033,
+    "bias_mean_error": -3.412456440925598,
+    "abs_err_median": 7.102153778076172,
+    "abs_err_p90": 22.5813690185547,
+    "abs_err_max": 51.96957778930664,
+    "frac_late": 0.39,
+    "frac_early": 0.61,
+    "frac_within_10": 0.6,
+    "frac_within_20": 0.83,
+    "max_late_error": 40.06529235839844,
+    "max_early_error": -51.96957778930664,
+    "n": 100
+  },
+  "val": {
+    "best_val_rmse": 12.896123635274694,
+    "selected_at_epoch": 18,
+    "final_val_rmse": 14.960541577085008,
+    "epochs_run": 28,
+    "early_stopped_at": 28,
+    "sample_passes": 28
+  },
+  "timing": {
+    "wall_s": 14.911510300007649,
+    "train_compute_s": 14.31806050031446
+  },
+  "comm": {
+    "model_payload": {
+      "n_tensors": 12,
+      "n_parameters": 215681,
+      "dtype": "float32",
+      "analytic_bytes_params_x4": 862724,
+      "raw_tensor_bytes": 862724,
+      "serialized_payload_bytes": 864260,
+      "serialization_overhead_bytes": 1536
+    },
+    "total_bytes": 0,
+    "note": "No model exchange. Raw training data would have to be centralised instead.",
+    "raw_training_data_float32_bytes_estimate": 1313280
+  },
+  "finished": "2026-10-21T15:55:43",
+  "status": "complete"
+}

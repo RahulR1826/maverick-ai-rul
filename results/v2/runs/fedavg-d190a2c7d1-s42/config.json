@@ -1,0 +1,81 @@
+{
+  "run_id": "fedavg-d190a2c7d1-s42",
+  "experiment": "sweep_clients_engine",
+  "grid_point": {
+    "fed.num_clients": 2
+  },
+  "aliases": [],
+  "seed": 42,
+  "config_hash": "d190a2c7d1",
+  "smoke": false,
+  "config": {
+    "data": {
+      "dataset_id": "FD001",
+      "rul_cap": 125,
+      "window_size": 30,
+      "stride": 1,
+      "val_fraction": 0.1,
+      "val_split_seed": 42,
+      "drop_sensors": [
+        1,
+        5,
+        6,
+        10,
+        16,
+        18,
+        19
+      ],
+      "cap_test_rul": true
+    },
+    "model": {
+      "hidden_size": 128,
+      "num_layers": 2,
+      "dropout": 0.2,
+      "bidirectional": false
+    },
+    "train": {
+      "batch_size": 256,
+      "learning_rate": 0.001,
+      "weight_decay": 1e-05,
+      "grad_clip": 1.0,
+      "device": "auto",
+      "deterministic": true
+    },
+    "fed": {
+      "num_clients": 2,
+      "num_rounds": 20,
+      "local_epochs": 5,
+      "fraction_fit": 1.0,
+      "partition": "engine",
+      "dirichlet_alpha": null,
+      "n_rul_bins": 10,
+      "min_client_windows": 256,
+      "max_partition_attempts": 100
+    },
+    "method": "fedavg"
+  },
+  "determinism": {
+    "cudnn_deterministic": true,
+    "cudnn_benchmark": false,
+    "use_deterministic_algorithms": true,
+    "CUBLAS_WORKSPACE_CONFIG": ":4096:8"
+  },
+  "environment": {
+    "python": "3.11.9",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "torch": "2.7.1+cu118",
+    "numpy": "1.26.4",
+    "pandas": "2.3.3",
+    "cuda": "11.8",
+    "cudnn": 90100,
+    "device": "cuda",
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "git_commit": "4f56f3c707e6babc36e8f4f710f0bcff8f64168c",
+    "git_dirty": true
+  },
+  "seed_streams": {
+    "init": 2032070059,
+    "train": 3318693332
+  },
+  "started": "2026-10-21T19:44:18"
+}

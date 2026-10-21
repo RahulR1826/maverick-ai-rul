@@ -1,0 +1,232 @@
+{
+  "run_id": "local-d748e1e7b6-s9001",
+  "method": "local",
+  "seed": 9001,
+  "experiment": "local_engine",
+  "grid_point": {},
+  "config_hash": "d748e1e7b6",
+  "smoke": false,
+  "data": {
+    "dataset_id": "FD001",
+    "n_features": 17,
+    "feature_cols": [
+      "os_1",
+      "os_2",
+      "os_3",
+      "s_2",
+      "s_3",
+      "s_4",
+      "s_7",
+      "s_8",
+      "s_9",
+      "s_11",
+      "s_12",
+      "s_13",
+      "s_14",
+      "s_15",
+      "s_17",
+      "s_20",
+      "s_21"
+    ],
+    "n_train_engines": 90,
+    "n_val_engines": 10,
+    "n_test_engines": 100,
+    "val_units": [
+      9,
+      10,
+      20,
+      42,
+      61,
+      69,
+      72,
+      83,
+      95,
+      97
+    ],
+    "n_train_windows": 15630,
+    "n_val_windows": 2101,
+    "scaler": "MinMaxScaler(0,1) fitted on training engines only",
+    "scaler_data_min": null,
+    "scaler_data_max": null,
+    "constant_train_features": [
+      "os_3"
+    ],
+    "test_rul_capped": true,
+    "raw_train_rows": 18240
+  },
+  "model": {
+    "n_parameters": 215681
+  },
+  "partition": {
+    "kind": "engine",
+    "num_clients": 5,
+    "alpha": null,
+    "attempts": 1,
+    "min_client_windows": 256,
+    "partition_seed": 1124720653,
+    "client_windows": [
+      3346,
+      2915,
+      3165,
+      3060,
+      3144
+    ],
+    "client_engines": [
+      18,
+      18,
+      18,
+      18,
+      18
+    ],
+    "client_rul_mean": [
+      82.64,
+      76.45,
+      80.21,
+      78.89,
+      79.92
+    ],
+    "engine_groups": [
+      [
+        7,
+        12,
+        26,
+        32,
+        37,
+        38,
+        41,
+        50,
+        52,
+        54,
+        67,
+        74,
+        81,
+        82,
+        84,
+        85,
+        88,
+        100
+      ],
+      [
+        3,
+        4,
+        8,
+        11,
+        27,
+        33,
+        44,
+        48,
+        58,
+        63,
+        78,
+        79,
+        80,
+        87,
+        90,
+        91,
+        92,
+        98
+      ],
+      [
+        17,
+        18,
+        23,
+        25,
+        28,
+        29,
+        30,
+        45,
+        51,
+        55,
+        59,
+        60,
+        64,
+        65,
+        89,
+        93,
+        96,
+        99
+      ],
+      [
+        1,
+        2,
+        14,
+        15,
+        16,
+        19,
+        21,
+        31,
+        34,
+        36,
+        39,
+        46,
+        57,
+        70,
+        71,
+        73,
+        76,
+        86
+      ],
+      [
+        5,
+        6,
+        13,
+        22,
+        24,
+        35,
+        40,
+        43,
+        47,
+        49,
+        53,
+        56,
+        62,
+        66,
+        68,
+        75,
+        77,
+        94
+      ]
+    ]
+  },
+  "test_selected": {
+    "rmse": 16.610773373521315,
+    "mae": 12.104743732452391,
+    "nasa_score": 693.2873166130414,
+    "bias_mean_error": 4.362701797485352
+  },
+  "test_final": {
+    "rmse": 18.59516422472008,
+    "mae": 13.892012673377991,
+    "nasa_score": 1002.9275451814743,
+    "bias_mean_error": 5.495725329399109
+  },
+  "test_aggregation_note": "Local-only metrics are the unweighted MEAN over the K client models, each evaluated on all 100 test engines.",
+  "local_client_spread": {
+    "sel_rmse_min": 13.905164418496142,
+    "sel_rmse_max": 18.6932383782666,
+    "sel_rmse_std_across_clients": 1.8602196575194925
+  },
+  "val": {
+    "best_val_rmse": 15.122758980348953,
+    "sample_passes": 100
+  },
+  "timing": {
+    "wall_s": 96.48095120000653,
+    "train_compute_s": 82.94499009964056
+  },
+  "comm": {
+    "model_payload": {
+      "n_tensors": 12,
+      "n_parameters": 215681,
+      "dtype": "float32",
+      "analytic_bytes_params_x4": 862724,
+      "raw_tensor_bytes": 862724,
+      "serialized_payload_bytes": 864260,
+      "serialization_overhead_bytes": 1536
+    },
+    "total_bytes": 0,
+    "note": "No communication."
+  },
+  "finished": "2026-10-21T18:48:44",
+  "status": "complete"
+}
