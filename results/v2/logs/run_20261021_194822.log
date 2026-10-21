@@ -1,0 +1,117 @@
+2026-10-21 19:48:22 | INFO    | Experiments: ['ablation_fedavg_k1'] | seeds: [42, 123, 2026, 3407, 9001] | 5 unique runs | out=D:\maverick_federated_learning pipeline_rul\results\v2 | log=D:\maverick_federated_learning pipeline_rul\results\v2\logs\run_20261021_194822.log
+2026-10-21 19:48:22 | INFO    | [1/5]
+2026-10-21 19:48:24 | INFO    | RUN fedavg-1efa93dd83-s42 | ablation_fedavg_k1 default | seed=42
+2026-10-21 19:48:37 | INFO    |     round   1/20 val_rmse=25.215 round_s=12.75
+2026-10-21 19:48:43 | INFO    |     round   2/20 val_rmse=20.131 round_s=6.31
+2026-10-21 19:48:49 | INFO    |     round   3/20 val_rmse=13.113 round_s=6.24
+2026-10-21 19:48:56 | INFO    |     round   4/20 val_rmse=12.541 round_s=6.36
+2026-10-21 19:49:02 | INFO    |     round   5/20 val_rmse=13.411 round_s=6.34
+2026-10-21 19:49:08 | INFO    |     round   6/20 val_rmse=12.355 round_s=6.09
+2026-10-21 19:49:14 | INFO    |     round   7/20 val_rmse=12.671 round_s=6.18
+2026-10-21 19:49:20 | INFO    |     round   8/20 val_rmse=12.879 round_s=5.99
+2026-10-21 19:49:26 | INFO    |     round   9/20 val_rmse=12.947 round_s=6.07
+2026-10-21 19:49:32 | INFO    |     round  10/20 val_rmse=12.745 round_s=6.02
+2026-10-21 19:49:38 | INFO    |     round  11/20 val_rmse=13.679 round_s=5.91
+2026-10-21 19:49:44 | INFO    |     round  12/20 val_rmse=13.732 round_s=5.93
+2026-10-21 19:49:50 | INFO    |     round  13/20 val_rmse=13.288 round_s=5.99
+2026-10-21 19:49:56 | INFO    |     round  14/20 val_rmse=13.962 round_s=5.59
+2026-10-21 19:50:02 | INFO    |     round  15/20 val_rmse=14.089 round_s=5.98
+2026-10-21 19:50:08 | INFO    |     round  16/20 val_rmse=14.152 round_s=6.34
+2026-10-21 19:50:14 | INFO    |     round  17/20 val_rmse=14.748 round_s=6.09
+2026-10-21 19:50:20 | INFO    |     round  18/20 val_rmse=15.364 round_s=5.97
+2026-10-21 19:50:26 | INFO    |     round  19/20 val_rmse=14.793 round_s=6.01
+2026-10-21 19:50:32 | INFO    |     round  20/20 val_rmse=15.955 round_s=6.01
+2026-10-21 19:50:32 | INFO    | DONE fedavg-1efa93dd83-s42 | test RMSE selected=13.270 final=16.982 | NASA selected=312.6
+2026-10-21 19:50:32 | INFO    | [2/5]
+2026-10-21 19:50:32 | INFO    | RUN fedavg-1efa93dd83-s123 | ablation_fedavg_k1 default | seed=123
+2026-10-21 19:50:39 | INFO    |     round   1/20 val_rmse=32.389 round_s=6.05
+2026-10-21 19:50:44 | INFO    |     round   2/20 val_rmse=14.914 round_s=5.96
+2026-10-21 19:50:51 | INFO    |     round   3/20 val_rmse=15.357 round_s=6.08
+2026-10-21 19:50:57 | INFO    |     round   4/20 val_rmse=13.863 round_s=6.04
+2026-10-21 19:51:03 | INFO    |     round   5/20 val_rmse=12.677 round_s=6.10
+2026-10-21 19:51:09 | INFO    |     round   6/20 val_rmse=14.570 round_s=6.18
+2026-10-21 19:51:15 | INFO    |     round   7/20 val_rmse=13.041 round_s=6.07
+2026-10-21 19:51:21 | INFO    |     round   8/20 val_rmse=13.231 round_s=5.99
+2026-10-21 19:51:27 | INFO    |     round   9/20 val_rmse=12.902 round_s=6.08
+2026-10-21 19:51:33 | INFO    |     round  10/20 val_rmse=13.513 round_s=5.98
+2026-10-21 19:51:39 | INFO    |     round  11/20 val_rmse=13.786 round_s=6.19
+2026-10-21 19:51:45 | INFO    |     round  12/20 val_rmse=15.412 round_s=6.03
+2026-10-21 19:51:51 | INFO    |     round  13/20 val_rmse=13.886 round_s=5.99
+2026-10-21 19:51:57 | INFO    |     round  14/20 val_rmse=13.245 round_s=5.75
+2026-10-21 19:52:03 | INFO    |     round  15/20 val_rmse=14.818 round_s=5.96
+2026-10-21 19:52:09 | INFO    |     round  16/20 val_rmse=14.961 round_s=5.89
+2026-10-21 19:52:15 | INFO    |     round  17/20 val_rmse=14.518 round_s=6.03
+2026-10-21 19:52:21 | INFO    |     round  18/20 val_rmse=16.131 round_s=5.99
+2026-10-21 19:52:27 | INFO    |     round  19/20 val_rmse=15.344 round_s=5.99
+2026-10-21 19:52:33 | INFO    |     round  20/20 val_rmse=14.949 round_s=5.96
+2026-10-21 19:52:33 | INFO    | DONE fedavg-1efa93dd83-s123 | test RMSE selected=13.137 final=16.012 | NASA selected=296.3
+2026-10-21 19:52:33 | INFO    | [3/5]
+2026-10-21 19:52:33 | INFO    | RUN fedavg-1efa93dd83-s2026 | ablation_fedavg_k1 default | seed=2026
+2026-10-21 19:52:39 | INFO    |     round   1/20 val_rmse=26.731 round_s=5.89
+2026-10-21 19:52:45 | INFO    |     round   2/20 val_rmse=14.199 round_s=5.99
+2026-10-21 19:52:51 | INFO    |     round   3/20 val_rmse=14.547 round_s=6.04
+2026-10-21 19:52:57 | INFO    |     round   4/20 val_rmse=12.902 round_s=6.03
+2026-10-21 19:53:03 | INFO    |     round   5/20 val_rmse=12.667 round_s=6.09
+2026-10-21 19:53:09 | INFO    |     round   6/20 val_rmse=14.862 round_s=6.02
+2026-10-21 19:53:15 | INFO    |     round   7/20 val_rmse=12.745 round_s=6.05
+2026-10-21 19:53:21 | INFO    |     round   8/20 val_rmse=14.547 round_s=5.98
+2026-10-21 19:53:27 | INFO    |     round   9/20 val_rmse=12.638 round_s=6.06
+2026-10-21 19:53:33 | INFO    |     round  10/20 val_rmse=13.577 round_s=5.96
+2026-10-21 19:53:39 | INFO    |     round  11/20 val_rmse=12.709 round_s=6.00
+2026-10-21 19:53:45 | INFO    |     round  12/20 val_rmse=14.755 round_s=6.04
+2026-10-21 19:53:51 | INFO    |     round  13/20 val_rmse=13.067 round_s=6.07
+2026-10-21 19:53:57 | INFO    |     round  14/20 val_rmse=14.470 round_s=6.01
+2026-10-21 19:54:03 | INFO    |     round  15/20 val_rmse=14.970 round_s=5.79
+2026-10-21 19:54:09 | INFO    |     round  16/20 val_rmse=14.328 round_s=5.94
+2026-10-21 19:54:15 | INFO    |     round  17/20 val_rmse=14.393 round_s=5.99
+2026-10-21 19:54:21 | INFO    |     round  18/20 val_rmse=14.731 round_s=5.98
+2026-10-21 19:54:27 | INFO    |     round  19/20 val_rmse=16.029 round_s=6.01
+2026-10-21 19:54:33 | INFO    |     round  20/20 val_rmse=16.289 round_s=6.06
+2026-10-21 19:54:33 | INFO    | DONE fedavg-1efa93dd83-s2026 | test RMSE selected=14.861 final=14.615 | NASA selected=522.7
+2026-10-21 19:54:33 | INFO    | [4/5]
+2026-10-21 19:54:33 | INFO    | RUN fedavg-1efa93dd83-s3407 | ablation_fedavg_k1 default | seed=3407
+2026-10-21 19:54:39 | INFO    |     round   1/20 val_rmse=25.996 round_s=5.95
+2026-10-21 19:54:45 | INFO    |     round   2/20 val_rmse=16.795 round_s=5.96
+2026-10-21 19:54:51 | INFO    |     round   3/20 val_rmse=14.401 round_s=6.03
+2026-10-21 19:54:57 | INFO    |     round   4/20 val_rmse=16.830 round_s=5.96
+2026-10-21 19:55:03 | INFO    |     round   5/20 val_rmse=16.041 round_s=5.93
+2026-10-21 19:55:09 | INFO    |     round   6/20 val_rmse=14.901 round_s=6.06
+2026-10-21 19:55:15 | INFO    |     round   7/20 val_rmse=13.242 round_s=6.01
+2026-10-21 19:55:21 | INFO    |     round   8/20 val_rmse=12.564 round_s=5.92
+2026-10-21 19:55:27 | INFO    |     round   9/20 val_rmse=15.708 round_s=5.86
+2026-10-21 19:55:33 | INFO    |     round  10/20 val_rmse=13.145 round_s=5.90
+2026-10-21 19:55:39 | INFO    |     round  11/20 val_rmse=13.161 round_s=5.90
+2026-10-21 19:55:45 | INFO    |     round  12/20 val_rmse=14.758 round_s=5.89
+2026-10-21 19:55:51 | INFO    |     round  13/20 val_rmse=13.138 round_s=6.04
+2026-10-21 19:55:57 | INFO    |     round  14/20 val_rmse=12.862 round_s=6.10
+2026-10-21 19:56:03 | INFO    |     round  15/20 val_rmse=13.765 round_s=6.01
+2026-10-21 19:56:09 | INFO    |     round  16/20 val_rmse=13.539 round_s=5.92
+2026-10-21 19:56:15 | INFO    |     round  17/20 val_rmse=14.369 round_s=5.89
+2026-10-21 19:56:21 | INFO    |     round  18/20 val_rmse=13.408 round_s=5.98
+2026-10-21 19:56:27 | INFO    |     round  19/20 val_rmse=13.703 round_s=6.04
+2026-10-21 19:56:33 | INFO    |     round  20/20 val_rmse=13.554 round_s=6.01
+2026-10-21 19:56:33 | INFO    | DONE fedavg-1efa93dd83-s3407 | test RMSE selected=13.503 final=14.137 | NASA selected=345.6
+2026-10-21 19:56:33 | INFO    | [5/5]
+2026-10-21 19:56:33 | INFO    | RUN fedavg-1efa93dd83-s9001 | ablation_fedavg_k1 default | seed=9001
+2026-10-21 19:56:39 | INFO    |     round   1/20 val_rmse=25.248 round_s=6.02
+2026-10-21 19:56:45 | INFO    |     round   2/20 val_rmse=15.121 round_s=6.08
+2026-10-21 19:56:51 | INFO    |     round   3/20 val_rmse=13.750 round_s=6.05
+2026-10-21 19:56:57 | INFO    |     round   4/20 val_rmse=16.750 round_s=6.13
+2026-10-21 19:57:03 | INFO    |     round   5/20 val_rmse=13.701 round_s=6.02
+2026-10-21 19:57:09 | INFO    |     round   6/20 val_rmse=13.882 round_s=5.96
+2026-10-21 19:57:15 | INFO    |     round   7/20 val_rmse=13.252 round_s=5.95
+2026-10-21 19:57:21 | INFO    |     round   8/20 val_rmse=12.985 round_s=6.08
+2026-10-21 19:57:27 | INFO    |     round   9/20 val_rmse=12.987 round_s=5.92
+2026-10-21 19:57:33 | INFO    |     round  10/20 val_rmse=13.801 round_s=5.94
+2026-10-21 19:57:39 | INFO    |     round  11/20 val_rmse=14.151 round_s=5.89
+2026-10-21 19:57:45 | INFO    |     round  12/20 val_rmse=13.824 round_s=6.02
+2026-10-21 19:57:51 | INFO    |     round  13/20 val_rmse=14.045 round_s=6.07
+2026-10-21 19:57:57 | INFO    |     round  14/20 val_rmse=14.700 round_s=6.06
+2026-10-21 19:58:03 | INFO    |     round  15/20 val_rmse=14.213 round_s=6.18
+2026-10-21 19:58:09 | INFO    |     round  16/20 val_rmse=14.239 round_s=5.89
+2026-10-21 19:58:15 | INFO    |     round  17/20 val_rmse=13.655 round_s=5.85
+2026-10-21 19:58:21 | INFO    |     round  18/20 val_rmse=16.716 round_s=5.62
+2026-10-21 19:58:27 | INFO    |     round  19/20 val_rmse=15.024 round_s=6.12
+2026-10-21 19:58:33 | INFO    |     round  20/20 val_rmse=15.087 round_s=6.00
+2026-10-21 19:58:33 | INFO    | DONE fedavg-1efa93dd83-s9001 | test RMSE selected=14.942 final=18.037 | NASA selected=463.0
+2026-10-21 19:58:33 | INFO    | Finished: {'done': 5, 'skipped': 0, 'failed': 0}

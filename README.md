@@ -33,7 +33,7 @@ Tested with Python 3.11.9, torch 2.7.1+cu118, numpy 1.26.4, pandas 2.3.3, scikit
 matplotlib 3.10.6 and pytest 9.1.1 on Windows 11 with an RTX 4060 Laptop GPU. The v2 pipeline doesn't need `flwr`.
 
 ```bash
-pip install -r requirements.txt pytest
+pip install -r requirements.txt
 ```
 
 ### Commands
@@ -112,6 +112,15 @@ then `research.aggregate` (once for `results/v2`, once with `--out results/v2_ti
 
 **Results:** `results/v2/README.md` (index), `results/v2/EXPERIMENT_REPORT.md` (report),
 `results/v2/CONCLUSION_CHECK.md` (original findings vs new results), `results/v2/paper_tables/PAPER_VALUES.md`.
+
+**Manuscript:** `paper/updated_sections.tex` holds the revised abstract, protocol, results (tables and figures),
+limitations and conclusion, ready to paste into the paper. `paper/figures/` has the figures, and
+`python paper/check_numbers.py` checks every number in the text against `results/v2/tables`.
+
+**Not in this repository (excluded by `.gitignore`):** the NASA C-MAPSS data (`CMAPSSData/`, download it from the
+NASA Prognostics Data Repository and place the `train_/test_/RUL_FD00x.txt` files there), model checkpoints
+(`checkpoints/`, about 850 MB) and cached arrays (`processed/`). Every result, table and figure can be inspected without
+them; re-running experiments requires the dataset.
 
 - `--smoke` uses a 2-round / 2-epoch budget and writes to `results/v2_smoke/` (never used in the paper).
 - `--dry-run` lists every planned run and whether it is already complete.

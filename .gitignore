@@ -36,6 +36,9 @@ CMAPSSData/
 processed/
 checkpoints/
 logs/
+# v2 experiment runner logs are evidence for results/v2 -- keep them
+!results/v2/logs/
+!results/v2_timing/logs/
 *.npy
 *.pt
 
