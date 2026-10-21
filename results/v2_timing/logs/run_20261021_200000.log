@@ -1,0 +1,133 @@
+2026-10-21 20:00:00 | INFO    | Experiments: ['centralized', 'centralized_legacy_es', 'fedavg_iid', 'local_iid', 'fedavg_engine', 'local_engine'] | seeds: [42] | 6 unique runs | out=results/v2_timing | log=results/v2_timing\logs\run_20261021_200000.log
+2026-10-21 20:00:00 | INFO    | [1/6]
+2026-10-21 20:00:01 | INFO    | RUN centralized-9d196dfb75-s42 | centralized default | seed=42
+2026-10-21 20:00:08 | INFO    |     epoch   1/100 loss= 4331.975 val_rmse=45.945
+2026-10-21 20:00:11 | INFO    |     epoch   5/100 loss=  662.686 val_rmse=21.962
+2026-10-21 20:00:15 | INFO    |     epoch  10/100 loss=  244.954 val_rmse=13.787
+2026-10-21 20:00:19 | INFO    |     epoch  15/100 loss=  218.112 val_rmse=13.487
+2026-10-21 20:00:22 | INFO    |     epoch  20/100 loss=  199.387 val_rmse=14.940
+2026-10-21 20:00:27 | INFO    |     epoch  25/100 loss=  184.969 val_rmse=14.073
+2026-10-21 20:00:30 | INFO    |     epoch  30/100 loss=  180.979 val_rmse=13.413
+2026-10-21 20:00:34 | INFO    |     epoch  35/100 loss=  180.568 val_rmse=13.290
+2026-10-21 20:00:38 | INFO    |     epoch  40/100 loss=  158.778 val_rmse=13.113
+2026-10-21 20:00:42 | INFO    |     epoch  45/100 loss=  154.685 val_rmse=12.969
+2026-10-21 20:00:45 | INFO    |     epoch  50/100 loss=  150.874 val_rmse=13.839
+2026-10-21 20:00:49 | INFO    |     epoch  55/100 loss=  134.876 val_rmse=14.250
+2026-10-21 20:00:53 | INFO    |     epoch  60/100 loss=  140.213 val_rmse=15.947
+2026-10-21 20:00:57 | INFO    |     epoch  65/100 loss=  127.363 val_rmse=15.671
+2026-10-21 20:01:02 | INFO    |     epoch  70/100 loss=  114.711 val_rmse=14.765
+2026-10-21 20:01:06 | INFO    |     epoch  75/100 loss=  106.796 val_rmse=15.328
+2026-10-21 20:01:09 | INFO    |     epoch  80/100 loss=  104.797 val_rmse=16.240
+2026-10-21 20:01:13 | INFO    |     epoch  85/100 loss=   98.595 val_rmse=15.285
+2026-10-21 20:01:17 | INFO    |     epoch  90/100 loss=   96.083 val_rmse=15.844
+2026-10-21 20:01:21 | INFO    |     epoch  95/100 loss=   81.242 val_rmse=14.988
+2026-10-21 20:01:25 | INFO    |     epoch 100/100 loss=   77.136 val_rmse=15.300
+2026-10-21 20:01:25 | INFO    | DONE centralized-9d196dfb75-s42 | test RMSE selected=13.822 final=15.595 | NASA selected=422.5
+2026-10-21 20:01:25 | INFO    | [2/6]
+2026-10-21 20:01:25 | INFO    | RUN centralized-60c0573574-s42 | centralized_legacy_es default | seed=42
+2026-10-21 20:01:26 | INFO    |     epoch   1/50 loss= 4331.975 val_rmse=45.945
+2026-10-21 20:01:27 | INFO    |     epoch   2/50 loss= 1778.450 val_rmse=42.373
+2026-10-21 20:01:28 | INFO    |     epoch   3/50 loss= 1750.737 val_rmse=42.482
+2026-10-21 20:01:28 | INFO    |     epoch   4/50 loss= 1238.481 val_rmse=27.970
+2026-10-21 20:01:29 | INFO    |     epoch   5/50 loss=  662.686 val_rmse=21.962
+2026-10-21 20:01:30 | INFO    |     epoch   6/50 loss=  439.326 val_rmse=18.626
+2026-10-21 20:01:30 | INFO    |     epoch   7/50 loss=  358.953 val_rmse=16.933
+2026-10-21 20:01:31 | INFO    |     epoch   8/50 loss=  368.415 val_rmse=24.733
+2026-10-21 20:01:32 | INFO    |     epoch   9/50 loss=  310.145 val_rmse=13.735
+2026-10-21 20:01:33 | INFO    |     epoch  10/50 loss=  244.954 val_rmse=13.787
+2026-10-21 20:01:34 | INFO    |     epoch  11/50 loss=  245.328 val_rmse=15.696
+2026-10-21 20:01:34 | INFO    |     epoch  12/50 loss=  238.255 val_rmse=13.441
+2026-10-21 20:01:35 | INFO    |     epoch  13/50 loss=  231.638 val_rmse=14.170
+2026-10-21 20:01:36 | INFO    |     epoch  14/50 loss=  205.470 val_rmse=13.142
+2026-10-21 20:01:37 | INFO    |     epoch  15/50 loss=  218.112 val_rmse=13.487
+2026-10-21 20:01:38 | INFO    |     epoch  16/50 loss=  218.307 val_rmse=12.871
+2026-10-21 20:01:38 | INFO    |     epoch  17/50 loss=  202.828 val_rmse=15.893
+2026-10-21 20:01:39 | INFO    |     epoch  18/50 loss=  202.957 val_rmse=13.376
+2026-10-21 20:01:40 | INFO    |     epoch  19/50 loss=  211.562 val_rmse=13.260
+2026-10-21 20:01:40 | INFO    |     epoch  20/50 loss=  199.387 val_rmse=14.940
+2026-10-21 20:01:41 | INFO    |     epoch  21/50 loss=  194.004 val_rmse=12.881
+2026-10-21 20:01:42 | INFO    |     epoch  22/50 loss=  199.485 val_rmse=16.723
+2026-10-21 20:01:43 | INFO    |     epoch  23/50 loss=  181.489 val_rmse=12.662
+2026-10-21 20:01:43 | INFO    |     epoch  24/50 loss=  179.775 val_rmse=13.243
+2026-10-21 20:01:44 | INFO    |     epoch  25/50 loss=  179.671 val_rmse=12.954
+2026-10-21 20:01:45 | INFO    |     epoch  26/50 loss=  172.086 val_rmse=12.863
+2026-10-21 20:01:45 | INFO    |     epoch  27/50 loss=  179.701 val_rmse=12.680
+2026-10-21 20:01:46 | INFO    |     epoch  28/50 loss=  171.854 val_rmse=12.909
+2026-10-21 20:01:47 | INFO    |     epoch  29/50 loss=  169.342 val_rmse=12.779
+2026-10-21 20:01:48 | INFO    |     epoch  30/50 loss=  165.080 val_rmse=12.802
+2026-10-21 20:01:49 | INFO    |     epoch  31/50 loss=  159.337 val_rmse=13.218
+2026-10-21 20:01:50 | INFO    |     epoch  32/50 loss=  158.362 val_rmse=12.854
+2026-10-21 20:01:50 | INFO    | DONE centralized-60c0573574-s42 | test RMSE selected=14.925 final=14.002 | NASA selected=490.7
+2026-10-21 20:01:50 | INFO    | [3/6]
+2026-10-21 20:01:51 | INFO    | RUN fedavg-3985e8aca1-s42 | fedavg_iid default | seed=42
+2026-10-21 20:01:55 | INFO    |     round   1/20 val_rmse=44.587 round_s=3.97
+2026-10-21 20:01:58 | INFO    |     round   2/20 val_rmse=31.672 round_s=3.82
+2026-10-21 20:02:02 | INFO    |     round   3/20 val_rmse=17.536 round_s=4.04
+2026-10-21 20:02:06 | INFO    |     round   4/20 val_rmse=14.650 round_s=3.98
+2026-10-21 20:02:10 | INFO    |     round   5/20 val_rmse=14.167 round_s=4.10
+2026-10-21 20:02:14 | INFO    |     round   6/20 val_rmse=14.736 round_s=3.36
+2026-10-21 20:02:18 | INFO    |     round   7/20 val_rmse=13.324 round_s=3.99
+2026-10-21 20:02:21 | INFO    |     round   8/20 val_rmse=13.189 round_s=3.57
+2026-10-21 20:02:25 | INFO    |     round   9/20 val_rmse=12.900 round_s=3.27
+2026-10-21 20:02:28 | INFO    |     round  10/20 val_rmse=12.828 round_s=3.62
+2026-10-21 20:02:32 | INFO    |     round  11/20 val_rmse=12.700 round_s=3.61
+2026-10-21 20:02:35 | INFO    |     round  12/20 val_rmse=12.880 round_s=3.49
+2026-10-21 20:02:39 | INFO    |     round  13/20 val_rmse=12.680 round_s=3.21
+2026-10-21 20:02:42 | INFO    |     round  14/20 val_rmse=12.692 round_s=3.31
+2026-10-21 20:02:45 | INFO    |     round  15/20 val_rmse=12.474 round_s=3.25
+2026-10-21 20:02:48 | INFO    |     round  16/20 val_rmse=12.859 round_s=3.23
+2026-10-21 20:02:52 | INFO    |     round  17/20 val_rmse=12.369 round_s=3.25
+2026-10-21 20:02:55 | INFO    |     round  18/20 val_rmse=12.507 round_s=3.79
+2026-10-21 20:02:59 | INFO    |     round  19/20 val_rmse=12.521 round_s=3.72
+2026-10-21 20:03:03 | INFO    |     round  20/20 val_rmse=12.519 round_s=3.57
+2026-10-21 20:03:03 | INFO    | DONE fedavg-3985e8aca1-s42 | test RMSE selected=13.536 final=12.702 | NASA selected=332.1
+2026-10-21 20:03:03 | INFO    | [4/6]
+2026-10-21 20:03:03 | INFO    | RUN local-d8e4145c97-s42 | local_iid default | seed=42
+2026-10-21 20:03:03 | INFO    |   local client 0 (3126 windows)
+2026-10-21 20:03:17 | INFO    |     client 0: val=13.02 test_rmse(sel)=13.44
+2026-10-21 20:03:17 | INFO    |   local client 1 (3126 windows)
+2026-10-21 20:03:32 | INFO    |     client 1: val=12.94 test_rmse(sel)=14.17
+2026-10-21 20:03:32 | INFO    |   local client 2 (3126 windows)
+2026-10-21 20:03:46 | INFO    |     client 2: val=12.99 test_rmse(sel)=14.86
+2026-10-21 20:03:46 | INFO    |   local client 3 (3126 windows)
+2026-10-21 20:04:00 | INFO    |     client 3: val=13.75 test_rmse(sel)=15.58
+2026-10-21 20:04:00 | INFO    |   local client 4 (3126 windows)
+2026-10-21 20:04:14 | INFO    |     client 4: val=13.37 test_rmse(sel)=13.35
+2026-10-21 20:04:14 | INFO    | DONE local-d8e4145c97-s42 | test RMSE selected=14.281 final=14.827 | NASA selected=379.2
+2026-10-21 20:04:14 | INFO    | [5/6]
+2026-10-21 20:04:14 | INFO    | RUN fedavg-c1ad10bed0-s42 | fedavg_engine default | seed=42
+2026-10-21 20:04:17 | INFO    |     round   1/20 val_rmse=45.880 round_s=2.92
+2026-10-21 20:04:20 | INFO    |     round   2/20 val_rmse=38.869 round_s=2.91
+2026-10-21 20:04:23 | INFO    |     round   3/20 val_rmse=21.093 round_s=2.91
+2026-10-21 20:04:26 | INFO    |     round   4/20 val_rmse=19.826 round_s=2.90
+2026-10-21 20:04:29 | INFO    |     round   5/20 val_rmse=14.481 round_s=3.04
+2026-10-21 20:04:32 | INFO    |     round   6/20 val_rmse=14.426 round_s=2.91
+2026-10-21 20:04:35 | INFO    |     round   7/20 val_rmse=13.709 round_s=2.89
+2026-10-21 20:04:38 | INFO    |     round   8/20 val_rmse=13.679 round_s=2.99
+2026-10-21 20:04:41 | INFO    |     round   9/20 val_rmse=13.820 round_s=3.12
+2026-10-21 20:04:44 | INFO    |     round  10/20 val_rmse=13.726 round_s=2.91
+2026-10-21 20:04:47 | INFO    |     round  11/20 val_rmse=13.598 round_s=2.91
+2026-10-21 20:04:50 | INFO    |     round  12/20 val_rmse=13.370 round_s=2.94
+2026-10-21 20:04:53 | INFO    |     round  13/20 val_rmse=13.357 round_s=2.91
+2026-10-21 20:04:56 | INFO    |     round  14/20 val_rmse=13.312 round_s=2.95
+2026-10-21 20:04:59 | INFO    |     round  15/20 val_rmse=13.129 round_s=2.97
+2026-10-21 20:05:02 | INFO    |     round  16/20 val_rmse=13.440 round_s=2.92
+2026-10-21 20:05:05 | INFO    |     round  17/20 val_rmse=13.457 round_s=3.11
+2026-10-21 20:05:08 | INFO    |     round  18/20 val_rmse=13.395 round_s=2.93
+2026-10-21 20:05:11 | INFO    |     round  19/20 val_rmse=13.270 round_s=3.05
+2026-10-21 20:05:14 | INFO    |     round  20/20 val_rmse=13.440 round_s=2.91
+2026-10-21 20:05:14 | INFO    | DONE fedavg-c1ad10bed0-s42 | test RMSE selected=13.748 final=14.793 | NASA selected=337.7
+2026-10-21 20:05:14 | INFO    | [6/6]
+2026-10-21 20:05:14 | INFO    | RUN local-d748e1e7b6-s42 | local_engine default | seed=42
+2026-10-21 20:05:14 | INFO    |   local client 0 (2986 windows)
+2026-10-21 20:05:27 | INFO    |     client 0: val=14.37 test_rmse(sel)=14.12
+2026-10-21 20:05:27 | INFO    |   local client 1 (3150 windows)
+2026-10-21 20:05:43 | INFO    |     client 1: val=15.74 test_rmse(sel)=17.07
+2026-10-21 20:05:43 | INFO    |   local client 2 (3193 windows)
+2026-10-21 20:05:59 | INFO    |     client 2: val=14.05 test_rmse(sel)=15.35
+2026-10-21 20:05:59 | INFO    |   local client 3 (3045 windows)
+2026-10-21 20:06:13 | INFO    |     client 3: val=15.50 test_rmse(sel)=17.20
+2026-10-21 20:06:13 | INFO    |   local client 4 (3256 windows)
+2026-10-21 20:06:27 | INFO    |     client 4: val=15.51 test_rmse(sel)=18.34
+2026-10-21 20:06:27 | INFO    | DONE local-d748e1e7b6-s42 | test RMSE selected=16.416 final=18.190 | NASA selected=672.2
+2026-10-21 20:06:27 | INFO    | Finished: {'done': 6, 'skipped': 0, 'failed': 0}

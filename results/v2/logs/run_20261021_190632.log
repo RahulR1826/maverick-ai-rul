@@ -1,0 +1,1 @@
+2026-10-21 19:06:32 | INFO    | Experiments: ['ablation_fedavg_k1'] | seeds: [42, 123, 2026, 3407, 9001] | 5 unique runs | out=D:\maverick_federated_learning pipeline_rul\results\v2 | log=D:\maverick_federated_learning pipeline_rul\results\v2\logs\run_20261021_190632.log
