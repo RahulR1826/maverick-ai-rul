@@ -1,0 +1,176 @@
+{
+  "run_id": "fedavg-28fdba67c8-s42",
+  "method": "fedavg",
+  "seed": 42,
+  "experiment": "sweep_clients",
+  "grid_point": {
+    "fed.num_clients": 10
+  },
+  "config_hash": "28fdba67c8",
+  "smoke": false,
+  "data": {
+    "dataset_id": "FD001",
+    "n_features": 17,
+    "feature_cols": [
+      "os_1",
+      "os_2",
+      "os_3",
+      "s_2",
+      "s_3",
+      "s_4",
+      "s_7",
+      "s_8",
+      "s_9",
+      "s_11",
+      "s_12",
+      "s_13",
+      "s_14",
+      "s_15",
+      "s_17",
+      "s_20",
+      "s_21"
+    ],
+    "n_train_engines": 90,
+    "n_val_engines": 10,
+    "n_test_engines": 100,
+    "val_units": [
+      9,
+      10,
+      20,
+      42,
+      61,
+      69,
+      72,
+      83,
+      95,
+      97
+    ],
+    "n_train_windows": 15630,
+    "n_val_windows": 2101,
+    "scaler": "MinMaxScaler(0,1) fitted on training engines only",
+    "scaler_data_min": null,
+    "scaler_data_max": null,
+    "constant_train_features": [
+      "os_3"
+    ],
+    "test_rul_capped": true,
+    "raw_train_rows": 18240
+  },
+  "model": {
+    "n_parameters": 215681
+  },
+  "partition": {
+    "kind": "iid_window",
+    "num_clients": 10,
+    "alpha": null,
+    "attempts": 1,
+    "min_client_windows": 256,
+    "partition_seed": 554428194,
+    "client_windows": [
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563
+    ],
+    "client_engines": [
+      90,
+      90,
+      90,
+      90,
+      90,
+      90,
+      90,
+      90,
+      90,
+      90
+    ],
+    "client_rul_mean": [
+      80.08,
+      79.63,
+      78.99,
+      77.26,
+      78.94,
+      80.37,
+      80.19,
+      81.5,
+      80.29,
+      79.88
+    ],
+    "engine_groups": null
+  },
+  "test_selected": {
+    "rmse": 13.011251294004902,
+    "mae": 9.812240495681763,
+    "nasa_score": 269.63785664920323,
+    "bias_mean_error": 2.4434410381317138,
+    "abs_err_median": 7.806432723999023,
+    "abs_err_p90": 21.455390167236327,
+    "abs_err_max": 37.25642013549805,
+    "frac_late": 0.53,
+    "frac_early": 0.47,
+    "frac_within_10": 0.56,
+    "frac_within_20": 0.88,
+    "max_late_error": 35.0421142578125,
+    "max_early_error": -37.25642013549805,
+    "n": 100
+  },
+  "test_final": {
+    "rmse": 13.011251294004902,
+    "mae": 9.812240495681763,
+    "nasa_score": 269.63785664920323,
+    "bias_mean_error": 2.4434410381317138,
+    "abs_err_median": 7.806432723999023,
+    "abs_err_p90": 21.455390167236327,
+    "abs_err_max": 37.25642013549805,
+    "frac_late": 0.53,
+    "frac_early": 0.47,
+    "frac_within_10": 0.56,
+    "frac_within_20": 0.88,
+    "max_late_error": 35.0421142578125,
+    "max_early_error": -37.25642013549805,
+    "n": 100
+  },
+  "val": {
+    "best_val_rmse": 12.803983111212903,
+    "selected_at_round": 20,
+    "final_val_rmse": 12.803983111212903,
+    "sample_passes": 100
+  },
+  "timing": {
+    "wall_s": 74.93387509998865,
+    "mean_round_wall_s": 3.7461929350101855,
+    "total_client_train_s": 73.625631199684,
+    "mean_client_local_train_s": 0.36812815599841997,
+    "total_aggregation_s": 0.4144898001104593,
+    "total_server_val_s": 0.42366020008921623,
+    "parallel_estimate_total_s": 8.502327300142497,
+    "note": "Clients run sequentially on one device; parallel_estimate = sum over rounds of (slowest client + aggregation), a derived estimate."
+  },
+  "comm": {
+    "model_payload": {
+      "n_tensors": 12,
+      "n_parameters": 215681,
+      "dtype": "float32",
+      "analytic_bytes_params_x4": 862724,
+      "raw_tensor_bytes": 862724,
+      "serialized_payload_bytes": 864260,
+      "serialization_overhead_bytes": 1536
+    },
+    "rounds": 20,
+    "clients_per_round": 10,
+    "precision": "float32",
+    "protocol_overhead_included": false,
+    "total_upload_bytes": 172852000,
+    "total_download_bytes": 172852000,
+    "total_bytes": 345704000,
+    "label": "serialized-payload estimate (application payload only; no protocol overhead; simulated, not measured on a network)"
+  },
+  "finished": "2026-10-21T19:40:05",
+  "status": "complete"
+}

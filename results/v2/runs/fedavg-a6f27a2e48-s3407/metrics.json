@@ -1,0 +1,152 @@
+{
+  "run_id": "fedavg-a6f27a2e48-s3407",
+  "method": "fedavg",
+  "seed": 3407,
+  "experiment": "sweep_clients",
+  "grid_point": {
+    "fed.num_clients": 2
+  },
+  "config_hash": "a6f27a2e48",
+  "smoke": false,
+  "data": {
+    "dataset_id": "FD001",
+    "n_features": 17,
+    "feature_cols": [
+      "os_1",
+      "os_2",
+      "os_3",
+      "s_2",
+      "s_3",
+      "s_4",
+      "s_7",
+      "s_8",
+      "s_9",
+      "s_11",
+      "s_12",
+      "s_13",
+      "s_14",
+      "s_15",
+      "s_17",
+      "s_20",
+      "s_21"
+    ],
+    "n_train_engines": 90,
+    "n_val_engines": 10,
+    "n_test_engines": 100,
+    "val_units": [
+      9,
+      10,
+      20,
+      42,
+      61,
+      69,
+      72,
+      83,
+      95,
+      97
+    ],
+    "n_train_windows": 15630,
+    "n_val_windows": 2101,
+    "scaler": "MinMaxScaler(0,1) fitted on training engines only",
+    "scaler_data_min": null,
+    "scaler_data_max": null,
+    "constant_train_features": [
+      "os_3"
+    ],
+    "test_rul_capped": true,
+    "raw_train_rows": 18240
+  },
+  "model": {
+    "n_parameters": 215681
+  },
+  "partition": {
+    "kind": "iid_window",
+    "num_clients": 2,
+    "alpha": null,
+    "attempts": 1,
+    "min_client_windows": 256,
+    "partition_seed": 4294753125,
+    "client_windows": [
+      7815,
+      7815
+    ],
+    "client_engines": [
+      90,
+      90
+    ],
+    "client_rul_mean": [
+      79.59,
+      79.83
+    ],
+    "engine_groups": null
+  },
+  "test_selected": {
+    "rmse": 13.858148549763264,
+    "mae": 10.304161930084229,
+    "nasa_score": 330.0734934864359,
+    "bias_mean_error": 3.045850925445557,
+    "abs_err_median": 7.7776641845703125,
+    "abs_err_p90": 22.6185546875,
+    "abs_err_max": 38.77909851074219,
+    "frac_late": 0.53,
+    "frac_early": 0.47,
+    "frac_within_10": 0.56,
+    "frac_within_20": 0.87,
+    "max_late_error": 38.194419860839844,
+    "max_early_error": -38.77909851074219,
+    "n": 100
+  },
+  "test_final": {
+    "rmse": 13.105415717570498,
+    "mae": 9.827018780708313,
+    "nasa_score": 260.34406335702533,
+    "bias_mean_error": 0.44630610942840576,
+    "abs_err_median": 7.249137878417969,
+    "abs_err_p90": 23.10464935302735,
+    "abs_err_max": 35.70936584472656,
+    "frac_late": 0.52,
+    "frac_early": 0.48,
+    "frac_within_10": 0.62,
+    "frac_within_20": 0.87,
+    "max_late_error": 35.70936584472656,
+    "max_early_error": -33.24109649658203,
+    "n": 100
+  },
+  "val": {
+    "best_val_rmse": 12.471248547659238,
+    "selected_at_round": 8,
+    "final_val_rmse": 13.386524400186858,
+    "sample_passes": 100
+  },
+  "timing": {
+    "wall_s": 61.15492909995373,
+    "mean_round_wall_s": 3.0573039499984587,
+    "total_client_train_s": 60.566088500083424,
+    "mean_client_local_train_s": 1.5141522125020856,
+    "total_aggregation_s": 0.07808230014052242,
+    "total_server_val_s": 0.42188209970481694,
+    "parallel_estimate_total_s": 31.009982000105083,
+    "note": "Clients run sequentially on one device; parallel_estimate = sum over rounds of (slowest client + aggregation), a derived estimate."
+  },
+  "comm": {
+    "model_payload": {
+      "n_tensors": 12,
+      "n_parameters": 215681,
+      "dtype": "float32",
+      "analytic_bytes_params_x4": 862724,
+      "raw_tensor_bytes": 862724,
+      "serialized_payload_bytes": 864260,
+      "serialization_overhead_bytes": 1536
+    },
+    "rounds": 20,
+    "clients_per_round": 2,
+    "precision": "float32",
+    "protocol_overhead_included": false,
+    "total_upload_bytes": 34570400,
+    "total_download_bytes": 34570400,
+    "total_bytes": 69140800,
+    "label": "serialized-payload estimate (application payload only; no protocol overhead; simulated, not measured on a network)"
+  },
+  "finished": "2026-10-21T19:37:43",
+  "status": "complete"
+}
