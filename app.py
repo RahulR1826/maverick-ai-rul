@@ -72,6 +72,7 @@ def calculate_metrics(df):
 # App Layout
 # ---------------------------------------------------------------------------
 st.title("✈️ Edge AI for Predictive Maintenance & Aircraft Health Monitoring")
+st.info("Legacy viewer for the original single-seed v1 predictions in `results/`. The 5-seed v2 results and live model predictions are in the React dashboard (`python api_server.py` + `frontend/`).")
 st.markdown("Visualizing the Remaining Useful Life (RUL) of aircraft turbofan engines using Federated Learning (LSTM).")
 
 df_c, df_f = load_data()
