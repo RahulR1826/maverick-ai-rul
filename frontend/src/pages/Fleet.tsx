@@ -1,176 +1,100 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { useStore } from '../store/useStore';
+import { useMemo, useState } from 'react';
 import { Plane, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useFleet } from '../hooks/useData';
+import { useStore } from '../store/useStore';
+import { Kpi, Loadable, PageHeader, Panel, RiskBadge, RISK_COLOR, fmt } from '../components/ui';
+import type { FleetRow, Risk } from '../services/api';
 import { cn } from '../utils';
-import { useState } from 'react';
 
-const TYPES = ["Boeing 737-800", "Boeing 777-300", "Airbus A320neo", "Airbus A350-900", "Boeing 787-9"];
+const RISKS: Risk[] = ['Critical', 'High', 'Medium', 'Low'];
+type SortKey = 'engine_id' | 'rul_lower' | 'rul_mean' | 'last_cycle' | 'abs_err';
 
 export function Fleet() {
-  const { fleet, selectAircraft } = useStore();
+  const fleet = useFleet();
+  const selectEngine = useStore((s) => s.selectEngine);
   const navigate = useNavigate();
-  const [lockingId, setLockingId] = useState<string | null>(null);
+  const [filter, setFilter] = useState<Risk | 'All'>('All');
+  const [sort, setSort] = useState<SortKey>('rul_lower');
 
-  const handleSelect = (id: string) => {
-    setLockingId(id);
-    setTimeout(() => {
-      selectAircraft(id);
-      navigate('/aircraft');
-    }, 400); // Wait for targeting lock animation
-  };
+  const rows = useMemo(() => {
+    const d = (fleet.data ?? []).filter((e) => filter === 'All' || e.risk === filter);
+    const key = (e: FleetRow) => (sort === 'abs_err' ? -Math.abs(e.rul_mean - e.true_rul) : e[sort]);
+    return [...d].sort((a, b) => key(a) - key(b));
+  }, [fleet.data, filter, sort]);
 
-  const criticalCount = fleet.filter(a => a.risk === 'Critical' || a.risk === 'High').length;
-  const activeCount = fleet.filter(a => a.edgeStatus === 'Active').length;
-  const maintenanceCount = fleet.filter(a => a.maintenanceStatus !== 'OK').length;
-
-  const STATS = [
-    { label: 'Total Aircraft', value: fleet.length, color: 'text-white', glow: 'shadow-[0_0_15px_rgba(255,255,255,0.1)]', border: 'border-white/20' },
-    { label: 'Critical / High Risk', value: criticalCount, color: 'text-[#FF0055]', glow: 'shadow-[0_0_15px_rgba(255,0,85,0.3)]', border: 'border-[#FF0055]/30' },
-    { label: 'Edge AI Active', value: activeCount, color: 'text-[#00E676]', glow: 'shadow-[0_0_15px_rgba(0,230,118,0.3)]', border: 'border-[#00E676]/30' },
-    { label: 'Maintenance Due', value: maintenanceCount, color: 'text-[#FFB300]', glow: 'shadow-[0_0_15px_rgba(255,179,0,0.3)]', border: 'border-[#FFB300]/30' },
-  ];
+  const th = (k: SortKey, label: string) => (
+    <th className="pb-3">
+      <button onClick={() => setSort(k)} className={cn('uppercase tracking-widest', sort === k ? 'text-primary' : 'hover:text-white')} aria-pressed={sort === k}>
+        {label}{sort === k ? ' ▲' : ''}
+      </button>
+    </th>
+  );
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 pb-20 relative min-h-[calc(100vh-6rem)]">
-      <div className="relative z-10">
-        <h2 className="text-3xl font-bold text-white flex items-center mb-1 drop-shadow-md">
-          <Plane className="w-8 h-8 mr-3 text-primary" /> Live Fleet Monitor
-        </h2>
-        <p className="text-muted text-sm font-mono uppercase tracking-widest">Select target to initialize Digital Twin diagnostics scan</p>
-      </div>
-
-      {/* Summary bar */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
-        {STATS.map((s, i) => (
-          <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
-            className="glass-panel p-5 text-center hover:border-primary/40 transition-all cursor-default relative overflow-hidden group hover:shadow-[0_0_25px_rgba(0,191,255,0.2)]">
-            <div className={`absolute top-0 left-0 w-1 h-full ${s.border.replace('border-', 'bg-')} ${s.glow}`} />
-            <div className={`text-3xl font-mono font-bold tabular-nums drop-shadow-md ${s.color}`}>{s.value}</div>
-            <div className="text-[10px] font-bold text-muted uppercase tracking-widest mt-1">{s.label}</div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Fleet table */}
-      <div className="glass-panel p-6 overflow-x-auto relative z-10">
-        <table className="w-full text-left border-collapse text-sm">
-          <thead>
-            <tr className="border-b border-primary/20 text-[10px] font-bold uppercase tracking-widest text-muted">
-              <th className="pb-3">Aircraft ID</th>
-              <th className="pb-3">Type</th>
-              <th className="pb-3">Health Score</th>
-              <th className="pb-3">RUL (Cycles)</th>
-              <th className="pb-3">Risk</th>
-              <th className="pb-3">Flight Phase</th>
-              <th className="pb-3">Edge AI</th>
-              <th className="pb-3">Maintenance</th>
-              <th className="pb-3"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {fleet.map((a, i) => {
-              const isLocking = lockingId === a.id;
-              
-              return (
-                <motion.tr
-                  key={a.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  onClick={() => handleSelect(a.id)}
-                  className={cn("border-b border-primary/10 transition-all cursor-pointer group relative", 
-                    isLocking 
-                      ? "bg-primary/20 shadow-[inset_0_0_30px_rgba(0,191,255,0.5)] z-20" 
-                      : "hover:bg-primary/5 hover:shadow-[inset_0_0_15px_rgba(0,191,255,0.15)]"
-                  )}
-                >
-                  {/* Targeting Lock Overlay Animation */}
-                  <AnimatePresence>
-                    {isLocking && (
-                      <motion.td 
-                        initial={{ opacity: 0, scaleY: 0 }}
-                        animate={{ opacity: 1, scaleY: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 border-y border-primary pointer-events-none flex items-center justify-center bg-primary/10 backdrop-blur-[2px]"
-                      >
-                        <motion.div 
-                          initial={{ scale: 2, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                          className="w-full h-full flex items-center px-4"
-                        >
-                          <div className="w-4 h-4 border-t-2 border-l-2 border-primary absolute top-2 left-2" />
-                          <div className="w-4 h-4 border-b-2 border-l-2 border-primary absolute bottom-2 left-2" />
-                          <div className="w-4 h-4 border-t-2 border-r-2 border-primary absolute top-2 right-2" />
-                          <div className="w-4 h-4 border-b-2 border-r-2 border-primary absolute bottom-2 right-2" />
-                          <span className="text-primary font-mono font-bold tracking-[0.3em] mx-auto animate-pulse">TARGET LOCKED // INITIALIZING SCAN</span>
-                        </motion.div>
-                      </motion.td>
-                    )}
-                  </AnimatePresence>
-
-                  <td className={cn("py-4 font-mono font-bold text-primary", isLocking ? "opacity-0" : "")}>{a.id}</td>
-                  <td className={cn("py-4 text-gray-300 font-medium", isLocking ? "opacity-0" : "")}>{TYPES[i % TYPES.length]}</td>
-                  <td className={cn("py-4", isLocking ? "opacity-0" : "")}>
-                    <div className="flex items-center gap-3">
-                      <div className="w-20 bg-gray-900 rounded-full h-[3px] relative overflow-hidden shadow-[inset_0_1px_3px_rgba(0,0,0,0.5)]">
-                        <div 
-                          className={cn("absolute top-0 left-0 h-full rounded-full shadow-[0_0_8px_currentColor]",
-                            a.health > 70 ? 'bg-[#00E676] text-[#00E676]' : 
-                            a.health > 40 ? 'bg-[#FFB300] text-[#FFB300]' : 
-                            'bg-[#FF0055] text-[#FF0055]'
-                          )}
-                          style={{ width: `${a.health}%` }} 
-                        />
-                      </div>
-                      <span className="text-white font-mono font-bold tabular-nums">{a.health}%</span>
-                    </div>
-                  </td>
-                  <td className={cn("py-4 font-mono font-bold tabular-nums", isLocking ? "opacity-0" : "text-white")}>{a.rul} cyc</td>
-                  <td className={cn("py-4", isLocking ? "opacity-0" : "")}>
-                    <span className={cn("px-2.5 py-1 rounded border text-[10px] font-bold uppercase tracking-widest",
-                      a.risk === 'Critical' ? 'bg-[#FF0055]/10 text-[#FF0055] border-[#FF0055]/30 shadow-[0_0_10px_rgba(255,0,85,0.1)]' :
-                      a.risk === 'High' ? 'bg-[#FF4444]/10 text-[#FF4444] border-[#FF4444]/30 shadow-[0_0_10px_rgba(255,68,68,0.1)]' :
-                      a.risk === 'Medium' ? 'bg-[#FFB300]/10 text-[#FFB300] border-[#FFB300]/30 shadow-[0_0_10px_rgba(255,179,0,0.1)]' :
-                      'bg-[#00E676]/10 text-[#00E676] border-[#00E676]/30 shadow-[0_0_10px_rgba(0,230,118,0.1)]'
-                    )}>
-                      {a.risk}
-                    </span>
-                  </td>
-                  <td className={cn("py-4 text-gray-400 font-medium", isLocking ? "opacity-0" : "")}>{a.phase}</td>
-                  <td className={cn("py-4", isLocking ? "opacity-0" : "")}>
-                    <div className="flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-muted">
-                      {a.edgeStatus === 'Syncing' ? (
-                        <motion.span 
-                          animate={{ opacity: [1, 0.4, 1], scale: [1, 1.2, 1] }} 
-                          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                          className="w-2 h-2 rounded-full bg-[#FFB300] shadow-[0_0_8px_#FFB300]"
-                        />
-                      ) : a.edgeStatus === 'Active' ? (
-                        <span className="w-2 h-2 rounded-full bg-[#00E676] shadow-[0_0_8px_#00E676]" />
-                      ) : (
-                        <span className="w-2 h-2 rounded-full bg-[#FF0055]" />
-                      )}
-                      {a.edgeStatus}
-                    </div>
-                  </td>
-                  <td className={cn("py-4", isLocking ? "opacity-0" : "")}>
-                    <span className={cn("text-[10px] font-bold uppercase tracking-widest",
-                      a.maintenanceStatus === 'Overdue' ? 'text-[#FF0055] drop-shadow-[0_0_5px_#FF0055]' :
-                      a.maintenanceStatus === 'Scheduled' ? 'text-[#FFB300]' : 'text-[#00E676]')}>
-                      {a.maintenanceStatus === 'OK' ? '✓ OK' : a.maintenanceStatus === 'Scheduled' ? '⚠ SCHED' : '🔴 OVERDUE'}
-                    </span>
-                  </td>
-                  <td className={cn("py-4", isLocking ? "opacity-0" : "")}>
-                    <ChevronRight className="w-4 h-4 text-muted group-hover:text-primary transition-colors group-hover:translate-x-1 duration-300" />
-                  </td>
-                </motion.tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
+    <div className="space-y-6 pb-20 relative">
+      <PageHeader icon={Plane} title="Fleet" subtitle="All 100 FD001 test engines at their last observed cycle. Click an engine to replay its history." />
+      <Loadable q={fleet} label="fleet">
+        {(f) => (
+          <>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
+              {RISKS.map((r) => <Kpi key={r} label={r} value={f.filter((e) => e.risk === r).length} color={RISK_COLOR[r]} />)}
+            </div>
+            <Panel>
+              <div className="flex flex-wrap gap-2 mb-4" role="group" aria-label="Filter by risk">
+                {(['All', ...RISKS] as const).map((r) => (
+                  <button key={r} onClick={() => setFilter(r)} aria-pressed={filter === r}
+                    className={cn('px-3 py-1.5 rounded border text-xs font-bold uppercase tracking-widest',
+                      filter === r ? 'border-primary text-primary bg-primary/10' : 'border-white/10 text-muted hover:text-white')}>
+                    {r}
+                  </button>
+                ))}
+                <span className="ml-auto text-xs text-muted self-center">{rows.length} engines</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-sm">
+                  <thead>
+                    <tr className="border-b border-primary/20 text-[10px] font-bold text-muted">
+                      {th('engine_id', 'Engine')}{th('last_cycle', 'Cycles flown')}{th('rul_mean', 'Predicted RUL')}{th('rul_lower', 'Interval')}
+                      <th className="pb-3 uppercase tracking-widest">Life remaining</th><th className="pb-3 uppercase tracking-widest">Risk</th>
+                      <th className="pb-3 uppercase tracking-widest">True RUL</th>{th('abs_err', 'Error')}<th />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((e) => {
+                      const err = e.rul_mean - e.true_rul;
+                      return (
+                        <tr key={e.engine_id} onClick={() => { selectEngine(e.engine_id); navigate('/engine'); }}
+                          className="border-b border-primary/10 hover:bg-primary/5 cursor-pointer group">
+                          <td className="py-3 font-mono font-bold text-primary">#{e.engine_id}</td>
+                          <td className="py-3 font-mono text-gray-300">{e.last_cycle}</td>
+                          <td className="py-3 font-mono font-bold" style={{ color: RISK_COLOR[e.risk] }}>{fmt(e.rul_mean, 0)}</td>
+                          <td className="py-3 font-mono text-gray-400">[{fmt(e.rul_lower, 0)}, {fmt(e.rul_upper, 0)}]</td>
+                          <td className="py-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-20 bg-gray-900 rounded-full h-[3px] overflow-hidden">
+                                <div className="h-full rounded-full" style={{ width: `${e.life_remaining_pct}%`, background: RISK_COLOR[e.risk] }} />
+                              </div>
+                              <span className="font-mono text-xs text-gray-300">{fmt(e.life_remaining_pct, 0)}%</span>
+                            </div>
+                          </td>
+                          <td className="py-3"><RiskBadge risk={e.risk} /></td>
+                          <td className="py-3 font-mono text-gray-400">{fmt(e.true_rul, 0)}</td>
+                          <td className="py-3 font-mono" style={{ color: err > 0 ? '#FFB300' : '#9fb4c8' }} title={err > 0 ? 'Late (over-predicted)' : 'Early (under-predicted)'}>
+                            {err > 0 ? '+' : ''}{fmt(err, 0)}
+                          </td>
+                          <td className="py-3"><ChevronRight className="w-4 h-4 text-muted group-hover:text-primary" /></td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-[11px] text-muted mt-4">Life remaining = predicted RUL ÷ 125-cycle cap. Error = predicted − true. Positive means late, which the NASA score penalises more.</p>
+            </Panel>
+          </>
+        )}
+      </Loadable>
     </div>
   );
 }
