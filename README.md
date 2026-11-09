@@ -131,13 +131,27 @@ returns an error instead of inventing data.
 - **Fleet**: the 100 official FD001 test engines at their last observed cycle.
 - **Prediction**: ensemble of the 5 validation-selected checkpoints of one model family (FedAvg IID-window by default;
   FedAvg whole-engine or centralized selectable in Settings).
-- **Uncertainty**: interval = ensemble mean ± k·SD, with k calibrated on the 10 validation engines for 90% coverage.
-  Coverage on the test engines is measured and shown (88% for the default model).
+- **Uncertainty**: interval = ensemble mean ± k·SD with Mondrian split-conformal calibration: one k per predicted-RUL
+  bin (< 30, 30–60, 60–90, ≥ 90 cycles), fitted on the 10 validation engines for 90% coverage. On the test engines
+  (FedAvg IID) coverage over all 10,196 cycle predictions is 89.5% (88.2% with the earlier single-k method), and the
+  interval near failure (predicted RUL < 30) is 41% narrower (18.9 vs 31.9 cycles). Coverage is measured, not guaranteed:
+  the calibration windows come from only 10 correlated engines.
 - **Risk**: from the interval's lower bound, against the thresholds set in Settings (default 20 / 40 / 70 cycles).
 - **Engine replay**: cycle-by-cycle predictions over each test engine's history, against the true RUL, with the 17 raw
   inputs.
 - **Explanations**: integrated gradients (256 steps, mean-training-window baseline) computed from the served models.
 - **Federated learning and results explorer**: the paper's 5-seed results, convergence, partitions and paired differences.
+
+- **Upload your own engine**: `POST /api/uploads` takes a file in NASA's C-MAPSS text format (26 columns; up to 10
+  engines, 2 MB). It is scaled with the training scaler, predicted with the same ensemble, and every cycle gets an
+  out-of-distribution fraction (share of inputs outside the training range). Uploads stay in memory only.
+- **Model comparison**: `GET /api/engines/{id}/compare` returns FedAvg-IID, FedAvg whole-engine and centralized
+  predictions and intervals for one engine.
+- **Live federated training**: `GET /api/train/stream` runs a short, real FedAvg job (≤ 100 passes; GPU if available)
+  and streams one server-sent event per round. One job at a time; it's a single-seed demonstration, not a paper result.
+- **Cache**: predictions and per-cycle attributions are cached in `cache/serving/`, keyed by checkpoint hashes. With the cache, loading
+  the model takes about 3 s (about 15 s for the whole server process on this laptop, mostly importing PyTorch). Build attributions for every cycle (used for live recolouring during replay) with
+  `python -m serving.precompute` (about 75 s per model on an RTX 4060; much slower on CPU).
 
 Requirements: the dataset in `CMAPSSData/` and the checkpoints in `checkpoints/v2/` (produced by the v2 runs).
 

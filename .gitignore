@@ -35,6 +35,7 @@ venv.bak/
 CMAPSSData/
 processed/
 checkpoints/
+cache/
 logs/
 # v2 experiment runner logs are evidence for results/v2 -- keep them
 !results/v2/logs/

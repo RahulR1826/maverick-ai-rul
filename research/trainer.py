@@ -222,7 +222,9 @@ def fedavg_aggregate(states: List[Dict[str, torch.Tensor]], weights: List[int]) 
 
 
 def run_fedavg(model, client_idx: List[np.ndarray], T: Tensors, train_cfg: Dict, fed_cfg: Dict,
-               seed: int, device, log: Optional[Callable[[str], None]] = None) -> Dict:
+               seed: int, device, log: Optional[Callable[[str], None]] = None,
+               on_round: Optional[Callable[[Dict], None]] = None) -> Dict:
+    """``on_round`` (optional) receives each round's history row; it may raise to abort training."""
     R, E, K = fed_cfg["num_rounds"], fed_cfg["local_epochs"], len(client_idx)
     idx_t = [torch.from_numpy(i).to(device) for i in client_idx]
     shards = [(T.Xtr[i], T.ytr[i]) for i in idx_t]
@@ -263,6 +265,8 @@ def run_fedavg(model, client_idx: List[np.ndarray], T: Tensors, train_cfg: Dict,
                      "elapsed_s": now(device) - t0})
         if log:
             log(f"    round {r:3d}/{R} val_rmse={vm['val_rmse']:.3f} round_s={hist[-1]['round_wall_s']:.2f}")
+        if on_round:
+            on_round(dict(hist[-1]))
     return {"history": hist, "client_rounds": client_rows, "best_val_rmse": best, "best_round": best_round,
             "best_state": best_state, "final_state": snapshot(model), "wall_s": now(device) - t0,
             "client_sizes": sizes}

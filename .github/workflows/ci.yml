@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    name: Python tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install CPU PyTorch and test dependencies
+        run: |
+          pip install torch==2.7.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install "numpy<2" pandas scikit-learn matplotlib joblib fastapi uvicorn httpx python-multipart pytest
+      # The C-MAPSS data and checkpoints are not in the repository, so tests that
+      # need them are skipped; everything else (metrics, partitions, aggregation,
+      # conformal intervals, config) runs.
+      - name: Run tests
+        run: python -m pytest -q tests -rs
+      - name: Verify Phase 2 checks against committed results
+        run: python -m research.verify_phase2
+
+  frontend:
+    name: Frontend type-check and build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npx tsc -p tsconfig.app.json --noEmit
+      - run: npm run build
