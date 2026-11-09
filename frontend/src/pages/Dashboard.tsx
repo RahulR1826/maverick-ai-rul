@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useFleet, useMeta } from '../hooks/useData';
 import { useStore } from '../store/useStore';
 import { Kpi, Loadable, Note, Panel, RiskBadge, RISK_COLOR, fmt } from '../components/ui';
+import { CalibrationPlot, FleetConstellation } from '../components/FleetViz';
+import { FederationOrbit } from '../components/FederationOrbit';
 import type { FleetRow, Meta } from '../services/api';
 
 function Kpis({ fleet, meta }: { fleet: FleetRow[]; meta: Meta }) {
@@ -34,11 +36,12 @@ export function Dashboard() {
       <div className="glass-panel p-10 relative overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,191,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,191,255,0.05)_1px,transparent_1px)] bg-[size:30px_30px] pointer-events-none opacity-50" />
         <div className="absolute right-0 top-0 w-96 h-96 bg-primary/20 blur-[100px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/3" />
+        <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden xl:block opacity-90"><FederationOrbit /></div>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10">
           <div className="inline-flex items-center px-3 py-1.5 rounded bg-primary/10 text-primary text-[10px] font-bold tracking-widest uppercase border border-primary/30 mb-4">
             <Shield className="w-3.5 h-3.5 mr-2" /> Federated learning for engine prognostics
           </div>
-          <h1 className="text-5xl font-extrabold tracking-tight text-white mb-4">
+          <h1 className="text-6xl font-black tracking-tight text-white mb-4 drop-shadow-[0_0_25px_rgba(0,191,255,0.35)]">
             MAVERICK <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">AI</span>
           </h1>
           <p className="text-lg text-gray-400 max-w-3xl leading-relaxed">
@@ -52,6 +55,10 @@ export function Dashboard() {
         {({ f, m }) => (
           <>
             <Kpis fleet={f} meta={m} />
+            <div className="grid grid-cols-1 2xl:grid-cols-[1.45fr_1fr] gap-6 relative z-10">
+              <Panel title="Fleet constellation · 100 test engines"><FleetConstellation fleet={f} onOpen={open} /></Panel>
+              <Panel title="Does the model know? Predicted vs true RUL"><CalibrationPlot fleet={f} /></Panel>
+            </div>
             <Panel title="Highest-risk engines (ranked by lower remaining-life bound)"
               note={`Remaining life in cycles: ensemble mean with a ${fmt(m.interval.coverage_target * 100, 0)}% interval. True RUL comes from RUL_FD001.txt and is shown for evaluation only.`}>
               <div className="overflow-x-auto">
