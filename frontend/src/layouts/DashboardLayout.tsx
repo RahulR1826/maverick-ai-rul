@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation, useOutlet } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '../utils';
-import { LayoutDashboard, Plane, Box, Server, Network, PenTool, BarChart3, AlertTriangle, Settings, BrainCircuit, Search } from 'lucide-react';
+import { LayoutDashboard, Plane, Box, Server, Network, PenTool, BarChart3, AlertTriangle, Settings, BrainCircuit, Search, Zap, UploadCloud } from 'lucide-react';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import { useHealth } from '../hooks/useData';
 import { useStore } from '../store/useStore';
 import { API_URL } from '../services/api';
@@ -16,6 +17,8 @@ const NAV_ITEMS = [
   { name: 'Maintenance', path: '/maintenance', icon: PenTool },
   { name: 'Alerts', path: '/alerts', icon: AlertTriangle },
   { name: 'Federated Learning', path: '/fl', icon: Network },
+  { name: 'Live Training', path: '/train', icon: Zap },
+  { name: 'Upload Engine', path: '/upload', icon: UploadCloud },
   { name: 'Results Explorer', path: '/results', icon: BarChart3 },
   { name: 'Model & Deployment', path: '/model', icon: Server },
   { name: 'Settings', path: '/settings', icon: Settings },
@@ -115,7 +118,7 @@ export function DashboardLayout() {
           <AnimatePresence mode="wait">
             <motion.div key={location.pathname} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.28, ease: 'easeOut' }}>
-              {outlet}
+              <ErrorBoundary key={location.pathname} label="page">{outlet}</ErrorBoundary>
             </motion.div>
           </AnimatePresence>
         </div>

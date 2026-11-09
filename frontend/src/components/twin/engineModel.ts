@@ -1,4 +1,4 @@
-import type { Explanation, Sensor } from '../../services/api';
+import type { AttributionSeries, Explanation, Sensor } from '../../services/api';
 
 /**
  * Schematic turbofan used by the digital twin.
@@ -88,6 +88,17 @@ export function moduleHealth(sensors: Sensor[], idx: number): Record<ModuleId, M
 /** Module attribution: sum of integrated-gradients attributions of its sensors (cycles of RUL). */
 export function moduleAttribution(x: Explanation): Record<ModuleId, number> {
   const byKey = Object.fromEntries(x.features.map((f) => [f.key, f.attribution]));
+  const out = {} as Record<ModuleId, number>;
+  for (const m of MODULES) out[m.id] = m.sensors.reduce((a, k) => a + (byKey[k] ?? 0), 0);
+  return out;
+}
+
+/** Module attribution at one cycle from the precomputed per-cycle series (instant, works during playback). */
+export function moduleAttributionAt(series: AttributionSeries, cycle: number): Record<ModuleId, number> | null {
+  const i = cycle - series.cycles[0];
+  const row = series.values[i];
+  if (!row) return null;
+  const byKey = Object.fromEntries(series.features.map((k, j) => [k, row[j]]));
   const out = {} as Record<ModuleId, number>;
   for (const m of MODULES) out[m.id] = m.sensors.reduce((a, k) => a + (byKey[k] ?? 0), 0);
   return out;

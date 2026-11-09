@@ -11,7 +11,7 @@ function arc(cx: number, cy: number, r: number, a0: number, a1: number) {
 }
 
 /** Radial RUL gauge: mean (filled), calibrated interval (band), true RUL (tick). */
-export function RulGauge({ mean, lo, hi, truth, risk, size = 190 }: { mean: number; lo: number; hi: number; truth: number; risk: Risk; size?: number }) {
+export function RulGauge({ mean, lo, hi, truth, risk, size = 190 }: { mean: number; lo: number; hi: number; truth: number | null; risk: Risk; size?: number }) {
   const A0 = Math.PI * 0.75, A1 = Math.PI * 2.25;            // 270° sweep, gap at the bottom
   const ang = (v: number) => A0 + (A1 - A0) * Math.max(0, Math.min(1, v / SCALE));
   const c = size / 2, r = size / 2 - 16;
@@ -21,7 +21,7 @@ export function RulGauge({ mean, lo, hi, truth, risk, size = 190 }: { mean: numb
     return <line key={`${v}-${color}`} x1={c + (r - len) * Math.cos(a)} y1={c + (r - len) * Math.sin(a)} x2={c + (r + len) * Math.cos(a)} y2={c + (r + len) * Math.sin(a)} stroke={color} strokeWidth={w} strokeLinecap="round" />;
   };
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`Predicted RUL ${mean.toFixed(0)} cycles, interval ${lo.toFixed(0)} to ${hi.toFixed(0)}, true RUL ${truth.toFixed(0)}`}>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`Predicted RUL ${mean.toFixed(0)} cycles, interval ${lo.toFixed(0)} to ${hi.toFixed(0)}${truth !== null ? `, true RUL ${truth.toFixed(0)}` : ''}`}>
       <defs>
         <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
       </defs>
@@ -29,11 +29,11 @@ export function RulGauge({ mean, lo, hi, truth, risk, size = 190 }: { mean: numb
       {[0, 25, 50, 75, 100, 125, 150].map((v) => tick(v, 3, 'rgba(148,163,184,0.35)', 1))}
       <path d={arc(c, c, r, ang(lo), Math.max(ang(lo) + 0.001, ang(hi)))} stroke={col} strokeOpacity={0.25} strokeWidth={16} fill="none" />
       <path d={arc(c, c, r, A0, Math.max(A0 + 0.001, ang(mean)))} stroke={col} strokeWidth={6} fill="none" strokeLinecap="round" filter="url(#glow)" />
-      {tick(truth, 10, '#F8FAFC', 2.5)}
+      {truth !== null && tick(truth, 10, '#F8FAFC', 2.5)}
       <text x={c} y={c - 4} textAnchor="middle" fill="#fff" fontSize={size * 0.22} fontFamily="Space Mono, monospace" fontWeight={700}>{mean.toFixed(0)}</text>
       <text x={c} y={c + 16} textAnchor="middle" fill="#8aa4c0" fontSize={10} letterSpacing={2}>CYCLES LEFT</text>
       <text x={c} y={c + 32} textAnchor="middle" fill={col} fontSize={10} fontFamily="Space Mono, monospace">[{lo.toFixed(0)} – {hi.toFixed(0)}]</text>
-      <text x={c} y={size - 6} textAnchor="middle" fill="#cbd5e1" fontSize={9}>▲ white tick = true RUL {truth.toFixed(0)}</text>
+      <text x={c} y={size - 6} textAnchor="middle" fill="#cbd5e1" fontSize={9}>{truth !== null ? `▲ white tick = true RUL ${truth.toFixed(0)}` : 'no ground truth for this engine'}</text>
     </svg>
   );
 }

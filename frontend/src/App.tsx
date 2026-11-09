@@ -10,6 +10,8 @@ import { Maintenance } from './pages/Maintenance';
 import { ResultsExplorer } from './pages/ResultsExplorer';
 import { Alerts } from './pages/Alerts';
 import { Settings } from './pages/Settings';
+import { LiveTraining } from './pages/LiveTraining';
+import { Upload } from './pages/Upload';
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
           <Route path="results" element={<ResultsExplorer />} />
           <Route path="model" element={<ModelDeployment />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="train" element={<LiveTraining />} />
+          <Route path="upload" element={<Upload />} />
           {/* old routes */}
           <Route path="aircraft" element={<Navigate to="/engine" replace />} />
           <Route path="analytics" element={<Navigate to="/results" replace />} />

@@ -2,16 +2,19 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Pause, Play, SkipBack, SkipForward, ChevronLeft, ChevronRight, CheckCircle2, AlertTriangle, Maximize2, Tag, RotateCw, Box, Activity, BrainCircuit, ScanLine, Loader2,
+  ShieldAlert, Pause, Play, SkipBack, SkipForward, ChevronLeft, ChevronRight, CheckCircle2, AlertTriangle, Maximize2, Tag, RotateCw, Box, Activity, BrainCircuit, ScanLine, Loader2,
 } from 'lucide-react';
 import { Area, CartesianGrid, ComposedChart, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { useEngine, useExplain, useFleet } from '../hooks/useData';
+import { useAttributions, useEngine, useExplain, useFleet, useUploads } from '../hooks/useData';
 import { useStore } from '../store/useStore';
 import { Loadable, Note, Panel, RiskBadge, RISK_COLOR, fmt, tooltipStyle } from '../components/ui';
 import type { EngineDetail, Sensor } from '../services/api';
+import { engineLabel, isUpload } from '../services/api';
+import { ModelComparison } from '../components/ModelComparison';
 import { cn } from '../utils';
+import { ErrorBoundary, hasWebGL } from '../components/ErrorBoundary';
 import { RiskTimeline, RulGauge } from '../components/twin/Hud';
-import { MODULES, attributionColor, healthColor, moduleAttribution, moduleHealth } from '../components/twin/engineModel';
+import { MODULES, attributionColor, healthColor, moduleAttribution, moduleAttributionAt, moduleHealth } from '../components/twin/engineModel';
 import type { ModuleId } from '../components/twin/engineModel';
 import type { CameraPreset, TwinMode } from '../components/twin/TurbofanTwin';
 
@@ -19,7 +22,7 @@ const TurbofanTwin = lazy(() => import('../components/twin/TurbofanTwin').then((
 const SPEEDS = [1, 4, 10] as const;
 const MODES: { key: TwinMode; label: string; icon: typeof Activity; hint: string }[] = [
   { key: 'health', label: 'Health', icon: Activity, hint: 'Modules glow by how far their sensors are from the typical healthy range' },
-  { key: 'attribution', label: 'AI attribution', icon: BrainCircuit, hint: 'Modules coloured by integrated-gradients attribution of their sensors (computed while paused)' },
+  { key: 'attribution', label: 'AI attribution', icon: BrainCircuit, hint: 'Modules coloured by integrated-gradients attribution of their sensors' },
   { key: 'xray', label: 'X-ray', icon: ScanLine, hint: 'Transparent casings with module envelopes' },
 ];
 
@@ -119,15 +122,21 @@ function Twin({ e }: { e: EngineDetail }) {
   const p = e.trajectory[cycle - first];
   const health = useMemo(() => moduleHealth(e.sensors, idx), [e.sensors, idx]);
 
-  // integrated-gradients attribution for the current cycle, fetched only while paused (debounced)
+  // Attribution: the precomputed per-cycle series (instant, also during playback) when the server has it;
+  // otherwise integrated gradients for the current cycle, computed on request while paused (debounced).
+  const series = useAttributions(e.engine_id, mode === 'attribution' && e.attributions_available);
+  const live = mode === 'attribution' && !!series.data;
   const [ixCycle, setIxCycle] = useState<number | undefined>(undefined);
   useEffect(() => {
-    if (mode !== 'attribution' || playing) return;
-    const t = setTimeout(() => setIxCycle(cycle), 350);
+    if (mode !== 'attribution' || (playing && !live)) return;
+    const t = setTimeout(() => setIxCycle(cycle), live ? 120 : 350);
     return () => clearTimeout(t);
-  }, [mode, playing, cycle]);
-  const ix = useExplain(e.engine_id, mode === 'attribution' ? ixCycle : undefined);
-  const attribution = mode === 'attribution' && ix.data && ix.data.cycle === ixCycle ? moduleAttribution(ix.data) : null;
+  }, [mode, playing, cycle, live]);
+  const ix = useExplain(e.engine_id, mode === 'attribution' && (!live || !playing) ? ixCycle : undefined);
+  const attribution = mode !== 'attribution' ? null
+    : live ? moduleAttributionAt(series.data!, cycle)
+    : ix.data && ix.data.cycle === ixCycle ? moduleAttribution(ix.data) : null;
+  const attrCycle = live ? cycle : ixCycle;
   const maxAttr = attribution ? Math.max(1e-6, ...Object.values(attribution).map(Math.abs)) : 1;
 
   const chart = useMemo(() => e.trajectory.map((t) => ({ cycle: t.cycle, band: [t.rul_lower, t.rul_upper], mean: t.rul_mean, truth: t.true_rul })), [e]);
@@ -138,11 +147,19 @@ function Twin({ e }: { e: EngineDetail }) {
       <div className="grid grid-cols-1 2xl:grid-cols-[1fr_340px] gap-6 relative z-10">
         {/* ---------------- 3D viewport ---------------- */}
         <div ref={viewport} className="relative h-[640px] rounded-2xl overflow-hidden border border-cyan-400/25 shadow-[0_0_60px_rgba(0,191,255,0.12)] bg-[#030712]">
+          {!hasWebGL() ? (
+            <div className="absolute inset-0 flex items-center justify-center text-center text-sm text-muted p-10">
+              This browser cannot create a WebGL context, so the 3D view is unavailable. Every number on this page still works; try another browser or enable hardware acceleration for the 3D twin.
+            </div>
+          ) : (
+          <ErrorBoundary label="3D view">
           <Suspense fallback={<div className="absolute inset-0 flex items-center justify-center text-muted"><Loader2 className="w-5 h-5 animate-spin mr-2" />Building digital twin…</div>}>
             <TurbofanTwin sensors={e.sensors} idx={idx} mode={mode} health={health} attribution={attribution} showLabels={labels}
               selected={selected} onSelect={(id) => setSelected((s) => (s === id ? null : id))} preset={preset} autoRotate={autoRotate}
               running={playing} accent={RISK_COLOR[p.risk]} />
           </Suspense>
+          </ErrorBoundary>
+          )}
 
           <div className="pointer-events-none absolute inset-0 scanlines" />
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(3,7,18,0.85))]" />
@@ -153,12 +170,18 @@ function Twin({ e }: { e: EngineDetail }) {
           {/* status */}
           <div className="absolute top-5 left-6 pointer-events-none">
             <div className="text-[10px] tracking-[0.35em] text-cyan-300/80 font-bold">DIGITAL TWIN · SCHEMATIC</div>
-            <div className="text-3xl font-black text-white tracking-tight mt-1">ENGINE <span className="text-primary">#{e.engine_id}</span></div>
+            <div className="text-3xl font-black text-white tracking-tight mt-1">{isUpload(e.engine_id) ? 'UPLOAD' : 'ENGINE'} <span className="text-primary">{isUpload(e.engine_id) ? e.engine_id : `#${e.engine_id}`}</span></div>
+            {isUpload(e.engine_id) && <div className="text-[10px] text-gray-400 mt-0.5">{e.source}</div>}
             <div className="flex items-center gap-2 mt-2">
               <RiskBadge risk={p.risk} />
               <span className="text-[11px] font-mono text-gray-300 bg-black/50 border border-white/10 rounded px-2 py-1">CYCLE {cycle} / {last}</span>
               <span className="text-[11px] font-mono text-gray-400 bg-black/50 border border-white/10 rounded px-2 py-1">{family}</span>
             </div>
+            {(p.ood_fraction ?? 0) > 0 && (
+              <div role="alert" className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-bold text-[#FFB300] bg-[#FFB300]/10 border border-[#FFB300]/40 rounded px-2 py-1">
+                <ShieldAlert className="w-3.5 h-3.5" /> {fmt((p.ood_fraction ?? 0) * 100, 0)}% of inputs outside the training range: the prediction is an extrapolation
+              </div>
+            )}
           </div>
 
           {/* controls */}
@@ -174,18 +197,30 @@ function Twin({ e }: { e: EngineDetail }) {
               <motion.p key={mode} initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                 className="max-w-[300px] text-right text-[10px] text-cyan-100/70 bg-black/40 rounded px-2 py-1">
                 {MODES.find((m) => m.key === mode)!.hint}
-                {mode === 'attribution' && (playing ? ' — pause to compute' : ix.isFetching ? ' — computing…' : '')}
+                {mode === 'attribution' && (live ? ' — precomputed for every cycle, updates live during replay' : playing ? ' — pause to compute for this cycle' : ix.isFetching ? ' — computing for this cycle…' : ' — computed for this cycle')}
               </motion.p>
             </AnimatePresence>
             {attribution && (() => {
               const top = MODULES.reduce((a, b) => (attribution[b.id] < attribution[a.id] ? b : a));
+              // largest single sensor (most negative attribution) at the same cycle
+              const perSensor: [string, number][] = live && series.data
+                ? series.data.features.map((k, j) => [k, series.data!.values[cycle - series.data!.cycles[0]]?.[j] ?? 0])
+                : (ix.data?.features ?? []).map((f) => [f.key, f.attribution]);
+              const [sk, sv] = perSensor.reduce((a, b) => (b[1] < a[1] ? b : a), ['', 0] as [string, number]);
+              const sensor = e.sensors.find((x) => x.key === sk);
               return attribution[top.id] < 0 ? (
-                <motion.div key={`${top.id}-${ixCycle}`} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                  className="max-w-[300px] rounded-lg border border-[#FF2E63]/50 bg-[#FF2E63]/10 backdrop-blur-md px-3 py-2 text-right">
-                  <div className="text-[9px] tracking-[0.25em] text-[#ff8fab] font-bold">LARGEST DRIVER OF LOW RUL · CYCLE {ixCycle}</div>
-                  <div className="text-sm font-bold text-white">{top.name}</div>
-                  <div className="text-[11px] font-mono text-[#ff8fab]">{attribution[top.id].toFixed(1)} cycles of attribution</div>
-                  <div className="text-[10px] text-gray-400 mt-1">For reference: FD001's simulated fault mode is HPC degradation (NASA C-MAPSS readme).</div>
+                <motion.div key={`${top.id}-${attrCycle}`} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+                  className="max-w-[320px] rounded-lg border border-[#FF2E63]/50 bg-[#FF2E63]/10 backdrop-blur-md px-3 py-2 text-right">
+                  <div className="text-[9px] tracking-[0.25em] text-[#ff8fab] font-bold">LARGEST DRIVERS OF LOW RUL · CYCLE {attrCycle}</div>
+                  <div className="text-sm font-bold text-white">{top.name} <span className="font-mono text-[11px] text-[#ff8fab]">{attribution[top.id].toFixed(1)} cyc</span></div>
+                  <div className="text-[10px] text-gray-400">module total (its sensors summed)</div>
+                  {sensor && sv < 0 && (
+                    <>
+                      <div className="text-sm font-bold text-white mt-1">{sensor.name} <span className="font-mono text-[11px] text-[#ff8fab]">{sv.toFixed(1)} cyc</span></div>
+                      <div className="text-[10px] text-gray-400">single sensor: {sensor.description}</div>
+                    </>
+                  )}
+                  <div className="text-[10px] text-gray-500 mt-1">Modules group sensors by where they are measured, not by fault cause: a degrading HPC (FD001's simulated fault) shifts readings across the engine.</div>
                 </motion.div>
               ) : null;
             })()}
@@ -237,7 +272,8 @@ function Twin({ e }: { e: EngineDetail }) {
             <RulGauge mean={p.rul_mean} lo={p.rul_lower} hi={p.rul_upper} truth={p.true_rul} risk={p.risk} />
             <div className="grid grid-cols-2 gap-2 w-full text-center">
               <div className="rounded-lg bg-black/30 p-2"><div className="text-[9px] text-muted uppercase tracking-widest">Error</div>
-                <div className="font-mono text-sm" style={{ color: p.rul_mean - p.true_rul > 0 ? '#FFB300' : '#9fb4c8' }}>{p.rul_mean - p.true_rul > 0 ? '+' : ''}{fmt(p.rul_mean - p.true_rul, 1)}</div></div>
+                {p.true_rul === null ? <div className="font-mono text-sm text-muted">no truth</div> :
+                  <div className="font-mono text-sm" style={{ color: p.rul_mean - p.true_rul > 0 ? '#FFB300' : '#9fb4c8' }}>{p.rul_mean - p.true_rul > 0 ? '+' : ''}{fmt(p.rul_mean - p.true_rul, 1)}</div>}</div>
               <div className="rounded-lg bg-black/30 p-2"><div className="text-[9px] text-muted uppercase tracking-widest">Worst case</div>
                 <div className="font-mono text-sm" style={{ color: RISK_COLOR[p.risk] }}>{fmt(p.rul_lower, 0)} cyc</div></div>
             </div>
@@ -251,7 +287,8 @@ function Twin({ e }: { e: EngineDetail }) {
                   {selMod.sensors.map((k) => {
                     const s = e.sensors.find((x) => x.key === k);
                     if (!s) return null;
-                    const a = ix.data?.features.find((f) => f.key === k)?.attribution;
+                    const a = live && series.data ? series.data.values[cycle - series.data.cycles[0]]?.[series.data.features.indexOf(k)]
+                      : ix.data?.features.find((f) => f.key === k)?.attribution;
                     return (
                       <div key={k} className="rounded-lg bg-black/30 p-2">
                         <div className="flex justify-between gap-2 text-[11px]"><span className="text-white font-bold">{s.name}</span><span className="text-muted text-right">{s.description}</span></div>
@@ -296,7 +333,7 @@ function Twin({ e }: { e: EngineDetail }) {
               <Tooltip contentStyle={tooltipStyle} formatter={(v: unknown, n: unknown) => (Array.isArray(v) ? [`${fmt(v[0], 0)} – ${fmt(v[1], 0)}`, 'Interval'] : [fmt(v as number, 1), String(n)])} labelFormatter={(l) => `Cycle ${l}`} />
               <Area dataKey="band" stroke="none" fill="url(#band)" name="Interval" isAnimationActive={false} />
               <Line dataKey="mean" stroke="#00BFFF" strokeWidth={2} dot={false} name="Predicted (ensemble mean)" isAnimationActive={false} />
-              <Line dataKey="truth" stroke="#E0E6ED" strokeDasharray="5 4" strokeWidth={1.5} dot={false} name="True RUL" isAnimationActive={false} />
+              {e.has_ground_truth && <Line dataKey="truth" stroke="#E0E6ED" strokeDasharray="5 4" strokeWidth={1.5} dot={false} name="True RUL" isAnimationActive={false} />}
               <ReferenceLine y={thresholds.critical} stroke="#FF0055" strokeDasharray="3 3" label={{ value: 'critical', fill: '#FF0055', fontSize: 10, position: 'right' }} />
               <ReferenceLine y={thresholds.high} stroke="#FF6B4A" strokeDasharray="3 3" label={{ value: 'high', fill: '#FF6B4A', fontSize: 10, position: 'right' }} />
               <ReferenceLine x={cycle} stroke="#FFB300" />
@@ -304,6 +341,10 @@ function Twin({ e }: { e: EngineDetail }) {
           </ResponsiveContainer>
         </div>
         <p className="text-[11px] text-muted mt-2">Solid: ensemble mean · band: calibrated interval · dashed: true RUL (capped at 125) · amber: replay position.</p>
+      </Panel>
+
+      <Panel title="Same engine, three models: federated vs centralized">
+        <ModelComparison id={e.engine_id} cycle={cycle} />
       </Panel>
 
       <Panel title={`Sensors at cycle ${cycle} (raw values)`}>
@@ -319,8 +360,9 @@ function Twin({ e }: { e: EngineDetail }) {
 export function EngineMonitor() {
   const { selectedEngineId, selectEngine } = useStore();
   const fleet = useFleet();
+  const uploads = useUploads();
   const engine = useEngine(selectedEngineId);
-  const ids = (fleet.data ?? []).map((f) => f.engine_id);
+  const ids: (number | string)[] = [...(fleet.data ?? []).map((f) => f.engine_id), ...(uploads.data ?? []).map((u) => u.upload_id)];
   const step = (d: number) => { if (ids.length) selectEngine(ids[(ids.indexOf(selectedEngineId) + d + ids.length) % ids.length]); };
   return (
     <div className="space-y-6 pb-20 relative">
@@ -331,16 +373,23 @@ export function EngineMonitor() {
         </div>
         <div className="flex items-center gap-2">
           <IconBtn onClick={() => step(-1)} label="Previous engine"><ChevronLeft className="w-4 h-4" /></IconBtn>
-          <select value={selectedEngineId} onChange={(ev) => selectEngine(Number(ev.target.value))} aria-label="Select engine"
+          <select value={String(selectedEngineId)} onChange={(ev) => selectEngine(/^\d+$/.test(ev.target.value) ? Number(ev.target.value) : ev.target.value)} aria-label="Select engine"
             className="glass-panel text-white px-4 py-2.5 outline-none focus:border-primary font-mono text-sm cursor-pointer">
-            {(fleet.data ?? Array.from({ length: 100 }, (_, i) => ({ engine_id: i + 1, risk: undefined }))).map((f) => (
-              <option key={f.engine_id} value={f.engine_id} className="bg-[#050B14]">Engine #{f.engine_id}{f.risk ? ` · ${f.risk}` : ''}</option>
-            ))}
+            {(uploads.data ?? []).length > 0 && (
+              <optgroup label="Your uploads" className="bg-[#050B14]">
+                {uploads.data!.map((u) => <option key={u.upload_id} value={u.upload_id} className="bg-[#050B14]">{u.upload_id} · {u.source.replace(/^upload: /, '')}</option>)}
+              </optgroup>
+            )}
+            <optgroup label="FD001 test engines" className="bg-[#050B14]">
+              {(fleet.data ?? Array.from({ length: 100 }, (_, i) => ({ engine_id: i + 1, risk: undefined }))).map((f) => (
+                <option key={f.engine_id} value={f.engine_id} className="bg-[#050B14]">Engine #{f.engine_id}{f.risk ? ` · ${f.risk}` : ''}</option>
+              ))}
+            </optgroup>
           </select>
           <IconBtn onClick={() => step(1)} label="Next engine"><ChevronRight className="w-4 h-4" /></IconBtn>
         </div>
       </div>
-      <Loadable q={engine} label="engine history">{(e) => <Twin key={e.engine_id} e={e} />}</Loadable>
+      <Loadable q={engine} label={`${engineLabel(selectedEngineId)} history`}>{(e) => <Twin key={String(e.engine_id)} e={e} />}</Loadable>
       <Note>
         The 3D engine is a schematic (not to scale) built from the C-MAPSS station layout. Module colours, sensor markers and readouts come from this engine's recorded data and the served model.
         Spool rotation and airflow particles are illustrative. C-MAPSS test engines stop before failure, and the model never saw them or their labels.

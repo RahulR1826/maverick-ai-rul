@@ -141,6 +141,12 @@ returns an error instead of inventing data.
   inputs.
 - **Explanations**: integrated gradients (256 steps, mean-training-window baseline) computed from the served models.
 - **Federated learning and results explorer**: the paper's 5-seed results, convergence, partitions and paired differences.
+- **Digital twin**: cutaway 3D turbofan driven by the engine's recorded sensors, with health, AI attribution (recolours
+  live during replay from the precomputed cache) and X-ray views, and an overlay of the federated vs centralized models.
+- **Live training** page (`/train`): start a short FedAvg run and watch each round stream in, overlaid on the paper's
+  5-seed curve when the set-up matches (K=5, E=5, IID window).
+- **Upload engine** page (`/upload`): drag and drop a C-MAPSS-format file, then open it in the digital twin; cycles with
+  inputs outside the training range are flagged as extrapolations.
 
 - **Upload your own engine**: `POST /api/uploads` takes a file in NASA's C-MAPSS text format (26 columns; up to 10
   engines, 2 MB). It is scaled with the training scaler, predicted with the same ensemble, and every cycle gets an

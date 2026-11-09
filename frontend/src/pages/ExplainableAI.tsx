@@ -5,6 +5,7 @@ import { useEngine, useExplain } from '../hooks/useData';
 import { useStore } from '../store/useStore';
 import { Loadable, Note, PageHeader, Panel, fmt, tooltipStyle } from '../components/ui';
 import type { Explanation } from '../services/api';
+import { engineLabel } from '../services/api';
 
 function Heatmap({ h }: { h: Explanation['heatmap'] }) {
   const max = Math.max(1e-9, ...h.values.flat().map(Math.abs));
@@ -78,7 +79,7 @@ export function ExplainableAI() {
   return (
     <div className="space-y-6 pb-20 relative">
       <PageHeader icon={BrainCircuit} title="Explainable AI"
-        subtitle={`Integrated-gradients attribution for engine #${selectedEngineId}${cycle ? ` at cycle ${cycle}` : ''}. Change engine or cycle in the Engine Monitor.`}
+        subtitle={`Integrated-gradients attribution for ${engineLabel(selectedEngineId)}${cycle ? ` at cycle ${cycle}` : ''}. Change engine or cycle in the Engine Monitor.`}
         right={<button onClick={() => navigate('/engine')} className="px-4 py-2 rounded border border-primary text-primary text-sm font-bold">Open Engine Monitor</button>} />
       <Loadable q={x} label="explanation">{(d) => <View x={d} />}</Loadable>
       <Note>Integrated gradients (Sundararajan et al., 2017) attributes the difference between the prediction and the baseline prediction to each input. Attributions show what the model relies on. They are not proof of a physical cause.</Note>
