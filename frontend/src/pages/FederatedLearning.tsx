@@ -1,100 +1,134 @@
-import ReactFlow, { Background, Controls, Position } from 'reactflow';
-import type { Edge, Node } from 'reactflow';
-import 'reactflow/dist/style.css';
-import { motion } from 'framer-motion';
-import { ShieldCheck, Network, Cpu, Lock } from 'lucide-react';
-import { ArcGauge } from '../components/ArcGauge';
+import { useMemo, useState } from 'react';
+import { Network } from 'lucide-react';
+import { Area, Bar, BarChart, CartesianGrid, ComposedChart, Legend, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { useConvergence, usePartitions, useRuntime, useSummary } from '../hooks/useData';
+import { Kpi, Loadable, Note, PageHeader, Panel, fmt, pm, tooltipStyle } from '../components/ui';
+import type { ConvergenceRow } from '../services/api';
 import { cn } from '../utils';
 
-// --- Custom Nodes & Edges ---
-// We can use standard nodes but styled heavily with tailwind classes
-const initialNodes: Node[] = [
-  { id: 'agg', type: 'output', data: { label: 'GLOBAL AGGREGATOR' }, position: { x: 400, y: 50 }, 
-    className: 'glass-panel border-2 border-primary text-white font-bold font-mono tracking-widest text-[10px] p-6 w-72 shadow-[0_0_30px_rgba(0,191,255,0.3)]' },
-  { id: 'c1', data: { label: 'NODE 01: Airline A' }, position: { x: 100, y: 250 }, 
-    className: 'glass-panel border-[#00E676]/30 text-white font-mono tracking-widest text-[9px] p-4 w-40 shadow-[0_0_15px_rgba(0,230,118,0.1)]' },
-  { id: 'c2', data: { label: 'NODE 02: Airline B' }, position: { x: 300, y: 250 }, 
-    className: 'glass-panel border-[#00E676]/30 text-white font-mono tracking-widest text-[9px] p-4 w-40 shadow-[0_0_15px_rgba(0,230,118,0.1)]' },
-  { id: 'c3', data: { label: 'NODE 03: Airline C' }, position: { x: 500, y: 250 }, 
-    className: 'glass-panel border-[#00E676]/30 text-white font-mono tracking-widest text-[9px] p-4 w-40 shadow-[0_0_15px_rgba(0,230,118,0.1)]' },
-  { id: 'c4', data: { label: 'NODE 04: Airline D' }, position: { x: 700, y: 250 }, 
-    className: 'glass-panel border-[#00E676]/30 text-white font-mono tracking-widest text-[9px] p-4 w-40 shadow-[0_0_15px_rgba(0,230,118,0.1)]' },
+const SERIES = [
+  { exp: 'fedavg_iid', grid: 'default', label: 'FedAvg · IID window', color: '#00BFFF' },
+  { exp: 'fedavg_engine', grid: 'default', label: 'FedAvg · whole-engine', color: '#1baf7a' },
+  { exp: 'centralized', grid: 'default', label: 'Centralized (per 5 epochs)', color: '#eb6834' },
+];
+const HET = [
+  { exp: 'fedavg_iid', grid: 'default', label: 'IID', color: '#00BFFF' },
+  { exp: 'fedavg_dirichlet', grid: 'dirichlet_alpha=1.0', label: 'α = 1.0', color: '#eb6834' },
+  { exp: 'fedavg_dirichlet', grid: 'dirichlet_alpha=0.5', label: 'α = 0.5', color: '#1baf7a' },
+  { exp: 'fedavg_dirichlet', grid: 'dirichlet_alpha=0.1', label: 'α = 0.1', color: '#eda100' },
+];
+const PARTS = [
+  { exp: 'fedavg_iid', grid: 'default', label: 'IID window' },
+  { exp: 'fedavg_dirichlet', grid: 'dirichlet_alpha=1.0', label: 'Dirichlet α=1.0' },
+  { exp: 'fedavg_dirichlet', grid: 'dirichlet_alpha=0.5', label: 'Dirichlet α=0.5' },
+  { exp: 'fedavg_dirichlet', grid: 'dirichlet_alpha=0.1', label: 'Dirichlet α=0.1' },
+  { exp: 'fedavg_engine', grid: 'default', label: 'Whole-engine' },
 ];
 
-// React Flow supports animated edges natively via CSS stroke-dasharray animation
-const initialEdges: Edge[] = [
-  { id: 'e1', source: 'c1', target: 'agg', animated: true, style: { stroke: '#00BFFF', strokeWidth: 2, filter: 'drop-shadow(0 0 5px #00BFFF)' } },
-  { id: 'e2', source: 'c2', target: 'agg', animated: true, style: { stroke: '#00BFFF', strokeWidth: 2, filter: 'drop-shadow(0 0 5px #00BFFF)' } },
-  { id: 'e3', source: 'c3', target: 'agg', animated: true, style: { stroke: '#00BFFF', strokeWidth: 2, filter: 'drop-shadow(0 0 5px #00BFFF)' } },
-  { id: 'e4', source: 'c4', target: 'agg', animated: true, style: { stroke: '#00BFFF', strokeWidth: 2, filter: 'drop-shadow(0 0 5px #00BFFF)' } },
-];
+function seriesByRound(rows: ConvergenceRow[], defs: typeof SERIES) {
+  const byRound: Record<number, Record<string, number | number[]>> = {};
+  for (const d of defs) {
+    for (const r of rows.filter((x) => x.experiment === d.exp && x.grid_label === d.grid)) {
+      const round = r.step_type === 'epoch' ? (r.step % 5 === 0 ? r.step / 5 : null) : r.step;
+      if (round === null) continue;
+      byRound[round] ??= { round };
+      byRound[round][d.label] = r.mean;
+      byRound[round][`${d.label}__band`] = [r.mean - (r.std ?? 0), r.mean + (r.std ?? 0)];
+    }
+  }
+  return Object.values(byRound).sort((a, b) => (a.round as number) - (b.round as number));
+}
+
+function ConvChart({ rows, defs }: { rows: ConvergenceRow[]; defs: typeof SERIES }) {
+  const data = useMemo(() => seriesByRound(rows, defs), [rows, defs]);
+  return (
+    <div className="h-72">
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 15 }}>
+          <CartesianGrid stroke="rgba(255,255,255,0.06)" />
+          <XAxis dataKey="round" stroke="#6B8CAE" fontSize={11} label={{ value: 'Communication round', position: 'insideBottom', offset: -8, fill: '#6B8CAE', fontSize: 11 }} />
+          <YAxis stroke="#6B8CAE" fontSize={11} domain={[10, 30]} allowDataOverflow label={{ value: 'Val. RMSE (cycles)', angle: -90, position: 'insideLeft', fill: '#6B8CAE', fontSize: 11 }} />
+          <Tooltip contentStyle={tooltipStyle} formatter={(v: unknown, n: unknown) => (Array.isArray(v) ? [null, null] : [fmt(v as number, 2), String(n)])} />
+          <Legend verticalAlign="top" height={28} wrapperStyle={{ fontSize: 11 }} />
+          {defs.map((d) => <Area key={`${d.label}b`} dataKey={`${d.label}__band`} stroke="none" fill={d.color} fillOpacity={0.12} legendType="none" isAnimationActive={false} />)}
+          {defs.map((d) => <Line key={d.label} dataKey={d.label} stroke={d.color} dot={false} strokeWidth={2} isAnimationActive={false} />)}
+        </ComposedChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
 
 export function FederatedLearning() {
+  const conv = useConvergence();
+  const summary = useSummary('selected');
+  const runtime = useRuntime();
+  const [part, setPart] = useState(0);
+  const parts = usePartitions(42);
+  const row = (exp: string) => summary.data?.find((r) => r.experiment === exp && r.grid_label === 'default');
+  const payload = runtime.data?.find((r) => r.experiment === 'fedavg_iid')?.payload_bytes;
+
   return (
-    <div className="space-y-6 h-full flex flex-col relative min-h-[calc(100vh-6rem)] pb-20">
-      
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10">
-        <h2 className="text-3xl font-bold text-white flex items-center mb-1 drop-shadow-md">
-          <Network className="w-8 h-8 mr-3 text-primary" /> Federated Learning Hub
-        </h2>
-        <p className="text-muted text-sm font-mono uppercase tracking-widest">Collaborative model training across isolated fleets</p>
-      </motion.div>
-
-      {/* Privacy Guarantee HUD Alert Strip */}
-      <motion.div 
-        initial={{ opacity: 0, scaleX: 0 }} animate={{ opacity: 1, scaleX: 1 }}
-        className="relative z-10 bg-[#00E676]/10 border border-[#00E676]/40 backdrop-blur-md p-3 rounded-lg flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(0,230,118,0.15)]"
-      >
-        <ShieldCheck className="w-5 h-5 text-[#00E676] drop-shadow-[0_0_5px_#00E676]" />
-        <span className="text-[#00E676] font-bold tracking-[0.2em] uppercase text-xs">Privacy Guarantee: Raw Sensor Data NEVER Shared • End-to-End Encryption Active</span>
-        <Lock className="w-4 h-4 text-[#00E676] ml-2 opacity-70" />
-      </motion.div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-        <div className="glass-panel p-6 flex flex-col items-center justify-center relative">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
-          <ArcGauge value={24} max={50} label="Current FL Round" color="#00BFFF" format={v => `${v}/50`} />
-        </div>
-        
-        <div className="glass-panel p-6 flex flex-col items-center justify-center relative">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#00E676]/50 to-transparent" />
-          <ArcGauge value={94.2} max={100} label="Global Accuracy" color="#00E676" format={v => `${v}%`} />
-        </div>
+    <div className="space-y-6 pb-20 relative">
+      <PageHeader icon={Network} title="Federated learning"
+        subtitle="How the served model was trained: FedAvg with K=5 clients, R=20 rounds and E=5 local epochs. Results are the mean over 5 seeds from results/v2." />
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 relative z-10">
+        <Kpi label="FedAvg · IID window" value={pm(row('fedavg_iid')?.rmse_mean, row('fedavg_iid')?.rmse_std)} sub="test RMSE, cycles" color="#00BFFF" />
+        <Kpi label="Centralized (pooled data)" value={pm(row('centralized')?.rmse_mean, row('centralized')?.rmse_std)} sub="same budget, same model" color="#eb6834" />
+        <Kpi label="Local-only · own 18 engines" value={pm(row('local_engine')?.rmse_mean, row('local_engine')?.rmse_std)} sub="what an airline gets alone" color="#FF0055" />
+        <Kpi label="Model traffic per training run" value={`${fmt(row('fedavg_iid')?.comm_total_MB_mean, 1)} MB`} color="#FFB300"
+          sub={payload ? `${payload.toLocaleString()} B per transfer × 2 × 5 clients × 20 rounds (payload estimate)` : 'payload estimate'} />
       </div>
 
-      <div className="glass-panel w-full h-[600px] relative overflow-hidden p-1 z-10">
-        <div className="absolute top-4 left-4 z-20 glass-panel border border-primary/30 p-3 pointer-events-none shadow-[0_0_15px_rgba(0,191,255,0.1)]">
-          <h4 className="text-[10px] font-bold text-primary uppercase tracking-widest mb-2 flex items-center">
-            <Cpu className="w-4 h-4 mr-2" /> Topology Legend
-          </h4>
-          <div className="flex items-center text-[9px] text-white uppercase tracking-widest font-mono mb-2">
-            <span className="w-4 h-0.5 bg-primary shadow-[0_0_5px_#00BFFF] mr-2" /> Model Weights Sync
+      <Loadable q={conv} label="convergence">
+        {(rows) => (
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <Panel title="Convergence at equal training budget" note="Centralized validation error is lowest around epoch 45 and then rises (overfitting); FedAvg keeps improving. Band: ± 1 SD over 5 seeds. Y-axis clipped at 30.">
+              <ConvChart rows={rows} defs={SERIES} />
+            </Panel>
+            <Panel title="Label skew across clients (Dirichlet α)" note="Smaller α = more skewed clients. α = 0.1 also makes client sizes very unequal (see the client chart below), so its effect is not label skew alone.">
+              <ConvChart rows={rows} defs={HET} />
+            </Panel>
           </div>
-          <div className="flex items-center text-[9px] text-white uppercase tracking-widest font-mono">
-            <span className="w-4 h-4 border border-[#00E676] bg-[#00E676]/10 rounded mr-2" /> Isolated Client Node
-          </div>
-        </div>
+        )}
+      </Loadable>
 
-        {/* CSS override to make react flow connections glow and feel like data streams */}
-        <style dangerouslySetInnerHTML={{__html: `
-          .react-flow__edge-path { stroke-width: 2 !important; }
-          .react-flow__edge.animated path { animation: dashdraw 1.5s linear infinite !important; stroke-dasharray: 10, 10 !important; }
-          @keyframes dashdraw { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
-        `}} />
-
-        <div style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}>
-          <ReactFlow 
-            nodes={initialNodes} 
-            edges={initialEdges} 
-            fitView 
-            className="bg-transparent"
-            proOptions={{ hideAttribution: true }}
-          >
-            <Background color="rgba(0,191,255,0.1)" gap={30} size={1.5} />
-            <Controls className="glass-panel border-primary/30 fill-primary drop-shadow-[0_0_5px_#00BFFF]" />
-          </ReactFlow>
+      <Panel title="Client data in each partition (seed 42)">
+        <div className="flex flex-wrap gap-2 mb-4" role="group" aria-label="Partition">
+          {PARTS.map((p, i) => (
+            <button key={p.label} onClick={() => setPart(i)} aria-pressed={part === i}
+              className={cn('px-3 py-1.5 rounded border text-xs font-bold', part === i ? 'border-primary text-primary bg-primary/10' : 'border-white/10 text-muted hover:text-white')}>{p.label}</button>
+          ))}
         </div>
-      </div>
+        <Loadable q={parts} label="partitions">
+          {(rows) => {
+            const d = rows.filter((r) => r.experiment === PARTS[part].exp && r.grid_label === PARTS[part].grid)
+              .map((r) => ({ client: `Client ${r.client_id}`, windows: r.n_windows, rul: r.rul_mean, engines: r.n_engines, exclusive: r.n_engines_exclusive }));
+            return (
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <div className="h-60">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={d}><CartesianGrid stroke="rgba(255,255,255,0.06)" /><XAxis dataKey="client" stroke="#6B8CAE" fontSize={11} /><YAxis stroke="#6B8CAE" fontSize={11} />
+                      <Tooltip contentStyle={tooltipStyle} formatter={(v: unknown, n: unknown) => [String(v), String(n)]} />
+                      <Bar dataKey="windows" name="Training windows" fill="#00BFFF" isAnimationActive={false} /></BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="h-60">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={d}><CartesianGrid stroke="rgba(255,255,255,0.06)" /><XAxis dataKey="client" stroke="#6B8CAE" fontSize={11} /><YAxis stroke="#6B8CAE" fontSize={11} domain={[0, 125]} />
+                      <Tooltip contentStyle={tooltipStyle} formatter={(v: unknown) => [fmt(v as number, 1), 'Mean RUL label']} />
+                      <Bar dataKey="rul" name="Mean RUL label" fill="#1baf7a" isAnimationActive={false} /></BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <p className="text-[11px] text-muted xl:col-span-2">
+                  Engines per client: {d.map((x) => `${x.engines}${x.exclusive === x.engines ? ' (all owned)' : ''}`).join(' · ')}.
+                  Window-level partitions spread every engine across all clients; whole-engine gives each client complete trajectories.
+                </p>
+              </div>
+            );
+          }}
+        </Loadable>
+      </Panel>
+      <Note>Simulated federation: clients ran in one process and no network was used. Traffic is the measured serialized payload size, excluding protocol overhead. Keeping raw data on clients is not a formal privacy guarantee; no differential privacy or secure aggregation is implemented.</Note>
     </div>
   );
 }

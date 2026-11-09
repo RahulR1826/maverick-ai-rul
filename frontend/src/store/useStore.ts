@@ -1,60 +1,45 @@
 import { create } from 'zustand';
+import type { Family, Thresholds } from '../services/api';
 
-export interface Aircraft {
-  id: string;
-  type: string;
-  health: number;
-  rul: number;
-  risk: 'Low' | 'Medium' | 'High' | 'Critical';
-  phase: string;
-  edgeStatus: 'Active' | 'Offline' | 'Syncing';
-  modelVersion: string;
-  maintenanceStatus: 'OK' | 'Scheduled' | 'Overdue';
+// Per-viewer UI settings. Everything shown on screen comes from the API.
+export const DEFAULT_THRESHOLDS: Thresholds = { critical: 20, high: 40, medium: 70 };
+
+interface Settings { family: Family; thresholds: Thresholds }
+
+const KEY = 'maverick-settings-v2';
+
+function loadSettings(): Settings {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      const s = JSON.parse(raw) as Partial<Settings>;
+      return { family: s.family ?? 'fedavg_iid', thresholds: { ...DEFAULT_THRESHOLDS, ...s.thresholds } };
+    }
+  } catch { /* storage unavailable: use defaults */ }
+  return { family: 'fedavg_iid', thresholds: DEFAULT_THRESHOLDS };
 }
 
-interface AppState {
-  fleet: Aircraft[];
-  sensors: Record<string, number>;
-  selectedAircraftId: string | null;
-  selectAircraft: (id: string) => void;
-  updateSensors: () => void;
+function save(s: Settings) {
+  try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* ignore */ }
 }
 
-const generateFleet = (): Aircraft[] => [
-  { id: 'AX-101', type: 'Boeing 737', health: 85, rul: 84, risk: 'Low', phase: 'Cruise', edgeStatus: 'Active', modelVersion: 'v2.7.3', maintenanceStatus: 'OK' },
-  { id: 'AX-102', type: 'Boeing 737', health: 58, rul: 32, risk: 'High', phase: 'Takeoff', edgeStatus: 'Active', modelVersion: 'v2.7.3', maintenanceStatus: 'Scheduled' },
-  { id: 'BX-214', type: 'Airbus A320', health: 22, rul: 12, risk: 'Critical', phase: 'Landing', edgeStatus: 'Active', modelVersion: 'v2.7.3', maintenanceStatus: 'Scheduled' },
-  { id: 'CX-319', type: 'Boeing 777', health: 92, rul: 110, risk: 'Low', phase: 'Cruise', edgeStatus: 'Syncing', modelVersion: 'v2.7.2', maintenanceStatus: 'OK' },
-  { id: 'EX-511', type: 'Boeing 787', health: 45, rul: 28, risk: 'High', phase: 'Descent', edgeStatus: 'Active', modelVersion: 'v2.7.3', maintenanceStatus: 'Overdue' },
-];
+interface AppState extends Settings {
+  selectedEngineId: number;
+  cycleByEngine: Record<number, number>;
+  selectEngine: (id: number) => void;
+  setCycle: (id: number, cycle: number) => void;
+  setFamily: (f: Family) => void;
+  setThresholds: (t: Thresholds) => void;
+  resetSettings: () => void;
+}
 
-export const useStore = create<AppState>((set) => ({
-  fleet: generateFleet(),
-  sensors: {
-    'Fan Speed (N1)': 5200,
-    'Compressor Speed (N2)': 14800,
-    'Fuel Flow': 3820,
-    'Oil Pressure': 60,
-    'Oil Temp': 62,
-    'EGT': 1050,
-    'Vibration': 0.42,
-    'Pressure Ratio': 14.6,
-  },
-  selectedAircraftId: 'AX-102',
-  selectAircraft: (id) => set({ selectedAircraftId: id }),
-  updateSensors: () => set((state) => {
-    const noise = (val: number, variance: number) => val + (Math.random() - 0.5) * variance;
-    return {
-      sensors: {
-        'Fan Speed (N1)': noise(5200, 50),
-        'Compressor Speed (N2)': noise(14800, 100),
-        'Fuel Flow': noise(3820, 40),
-        'Oil Pressure': noise(60, 2),
-        'Oil Temp': noise(62, 1),
-        'EGT': noise(1050, 10),
-        'Vibration': noise(0.42, 0.05),
-        'Pressure Ratio': noise(14.6, 0.2),
-      }
-    };
-  })
+export const useStore = create<AppState>((set, get) => ({
+  ...loadSettings(),
+  selectedEngineId: 34,
+  cycleByEngine: {},
+  selectEngine: (id) => set({ selectedEngineId: id }),
+  setCycle: (id, cycle) => set((s) => ({ cycleByEngine: { ...s.cycleByEngine, [id]: cycle } })),
+  setFamily: (family) => { set({ family }); save({ family, thresholds: get().thresholds }); },
+  setThresholds: (thresholds) => { set({ thresholds }); save({ family: get().family, thresholds }); },
+  resetSettings: () => { set({ family: 'fedavg_iid', thresholds: DEFAULT_THRESHOLDS }); save({ family: 'fedavg_iid', thresholds: DEFAULT_THRESHOLDS }); },
 }));

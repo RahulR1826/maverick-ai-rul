@@ -122,6 +122,44 @@ NASA Prognostics Data Repository and place the `train_/test_/RUL_FD00x.txt` file
 (`checkpoints/`, about 850 MB) and cached arrays (`processed/`). Every result, table and figure can be inspected without
 them; re-running experiments requires the dataset.
 
+## Dashboard (real model predictions)
+
+The React dashboard in `frontend/` is backed by `api_server.py` (FastAPI, package `serving/`). Every value it shows is
+computed from the trained v2 checkpoints, the FD001 data and `results/v2/tables`; if an artifact is missing the API
+returns an error instead of inventing data.
+
+- **Fleet**: the 100 official FD001 test engines at their last observed cycle.
+- **Prediction**: ensemble of the 5 validation-selected checkpoints of one model family (FedAvg IID-window by default;
+  FedAvg whole-engine or centralized selectable in Settings).
+- **Uncertainty**: interval = ensemble mean ± k·SD, with k calibrated on the 10 validation engines for 90% coverage.
+  Coverage on the test engines is measured and shown (88% for the default model).
+- **Risk**: from the interval's lower bound, against the thresholds set in Settings (default 20 / 40 / 70 cycles).
+- **Engine replay**: cycle-by-cycle predictions over each test engine's history, against the true RUL, with the 17 raw
+  inputs.
+- **Explanations**: integrated gradients (256 steps, mean-training-window baseline) computed from the served models.
+- **Federated learning and results explorer**: the paper's 5-seed results, convergence, partitions and paired differences.
+
+Requirements: the dataset in `CMAPSSData/` and the checkpoints in `checkpoints/v2/` (produced by the v2 runs).
+
+```bash
+python api_server.py
+```
+
+```bash
+npm --prefix frontend install
+```
+
+```bash
+npm --prefix frontend run dev
+```
+
+Open http://localhost:5173. The API listens on http://localhost:8000 (interactive docs at `/docs`). Loading the model
+ensemble takes 10–20 s at start-up. To use another API address, copy `frontend/.env.example` to `frontend/.env` and set
+`VITE_API_URL`. API tests: `python -m pytest tests/test_api.py`.
+
+The older Streamlit apps (`maverick_app.py`, `app.py`) are kept as legacy prototypes. `maverick_app.py` shows simulated
+data and says so on screen.
+
 - `--smoke` uses a 2-round / 2-epoch budget and writes to `results/v2_smoke/` (never used in the paper).
 - `--dry-run` lists every planned run and whether it is already complete.
 - Runs are content-addressed (`<method>-<config-hash>-s<seed>`): identical configurations shared by several
